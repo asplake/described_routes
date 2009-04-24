@@ -1,6 +1,14 @@
 %w[rubygems rake rake/clean fileutils newgem rubigen].each { |f| require f }
 require File.dirname(__FILE__) + '/lib/described_routes'
 
+# undefined method `empty?' for nil:NilClass
+# /Library/Ruby/Site/1.8/rubygems/specification.rb:886:in `validate'
+class NilClass
+  def empty?
+    true
+  end
+end
+
 # Generate all the Rake tasks
 # Run 'rake -T' to see list of generated tasks (from gem root directory)
 $hoe = Hoe.new('described_routes', DescribedRoutes::VERSION) do |p|
