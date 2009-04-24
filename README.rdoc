@@ -1,48 +1,57 @@
-= described_routes
-
-* FIX (url)
+= described_routes README
 
 == DESCRIPTION:
 
-FIX (describe your package)
-
-== FEATURES/PROBLEMS:
-
-* FIX (list of features or problems)
+Outputs framework-neutral descriptions of Rails routes in JSON, YAML, XML and Ruby formats, for potential consumption by client applications (e.g. those based on path-to[http://github.com/asplake/path-to/tree]).
 
 == SYNOPSIS:
 
-  FIX (code sample of usage)
+  $ rake --tasks described_routes
+  rake described_routes:json        # Describe resource structure in JSON format
+  rake described_routes:ruby        # Describe resource structure as a Ruby literal
+  rake described_routes:xml         # Describe resource structure in XML format
+  rake described_routes:yaml        # Describe resource structure in YAML format
+  rake described_routes:yaml_short  # Describe resource structure in YAML format (basic structure only)
+
+  $ rake described_routes:yaml_short
+  - name: users
+    path_template: /users{-prefix|.|format}{format}
+    resources: 
+    - name: user
+      path_template: /users/{user_id}{-prefix|.|format}{format}
+      resources: 
+      - name: user_articles
+        rel: articles
+        path_template: /users/{user_id}/articles{-prefix|.|format}{format}
+        resources: 
+        - name: user_article
+          path_template: /users/{user_id}/articles/{article_id}{-prefix|.|format}{format}
+          resources: 
+          - name: edit_user_article
+            path_template: /users/{user_id}/articles/{article_id}/edit{-prefix|.|format}{format}
+            rel: edit
+        - name: new_user_article
+          path_template: /users/{user_id}/articles/new{-prefix|.|format}{format}
+          rel: new
+        - name: recent_user_articles
+          path_template: /users/{user_id}/articles/recent{-prefix|.|format}{format}
+          rel: recent
+      - name: edit_user
+        path_template: /users/{user_id}/edit{-prefix|.|format}{format}
+        rel: edit
 
 == REQUIREMENTS:
 
-* FIX (list of requirements)
+Rails.  Note however that the output format is not Rails-specific.  It makes no mention of Rails concepts such as controllers or actions.
 
 == INSTALL:
 
-* FIX (sudo gem install, anything else)
+  sudo gem install described_routes
 
-== LICENSE:
+Then add the following to your Rakefile:
 
-(The MIT License)
+  require "tasks/described_routes"
 
-Copyright (c) 2009 FIXME full name
+== Author
 
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-'Software'), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+Mike Burrows (asplake), email mailto:mjb@asplake.co.uk, website positiveincline.com[http://positiveincline.com] (see articles tagged described_routes[http://positiveincline.com/?tag=described_routes])
