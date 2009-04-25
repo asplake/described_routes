@@ -1,6 +1,8 @@
 
 module DescribedRoutes
+  # rubygem version
   VERSION = "0.0.1"
+  
   #
   # Based on the implementation of "rake routes".  Returns a hash of Rails path specifications (slightly normalized)
   # mapped to hashes of the attributes we need. 
@@ -43,12 +45,11 @@ module DescribedRoutes
 
         # collect & format optional format parameter
         optional_params = []
-puts template
         template.sub!("(.{format})") do |match|
           optional_params << "format"
           "{-prefix|.|format}"
         end
-puts template
+
         # so now we have (for example):
         #   segs              #=> "/users/:user_id/edit(.:format)" (was "/users/:id")
         #   key               #=> "/users/:user_id/edit"
@@ -77,7 +78,6 @@ puts template
     end
   end
 
-  #:nodoc:
   #
   # Turns a sorted array of strings into a tree structure as follows:
   #
@@ -89,7 +89,7 @@ puts template
   # Note that in the example (as in is actual usage in this module), we choose not to to have the root resource ("/") as
   # the parent of all other resources.
   #
-  def self.make_key_tree(sorted_keys, &is_prefix)
+  def self.make_key_tree(sorted_keys, &is_prefix) #:nodoc:
     head, *tail = sorted_keys
     if head
       children, siblings = tail.partition{|p| is_prefix.call(head, p)}
@@ -103,7 +103,7 @@ puts template
   # Takes the routes from Rails and produces the required tree structure.  #to_yaml and #to_json can
   # be called on the result directly.  If XML is required, see #resource_xml.
   #
-  def self.get_resource_tree
+  def self.get_resource_tree 
     resources = get_rails_resources
     resources.delete_if{|k, v| v["name"].blank? or v["name"] =~ /^formatted/}
 
@@ -136,7 +136,6 @@ puts template
     end
   end
 
-  #:nodoc:
   #
   # Depth-first tree traversal
   #
@@ -144,21 +143,19 @@ puts template
   #   map_key_tree(tree){|key, processed_children| {key => processed_children}}
   #   # => [{"/"=>[]}, {"/a"=>[{"/a/b"=>[{"/a/b/c"=>[]}]}, {"/a/d"=>[]}]}, {"/b"=>[]}]
   #
-  def self.map_key_tree(tree, &blk)
+  def self.map_key_tree(tree, &blk) #:nodoc:
     tree.map do |pair|
       key, children = pair
       blk.call(key, map_key_tree(children, &blk))
     end
   end
 
-  #:nodoc:
-  def self.value_tag(xm, h, tag)
+  def self.value_tag(xm, h, tag) #:nodoc:
     value = h[tag]
     xm.tag!(tag, value) unless value.blank?
   end
 
-  #:nodoc:
-  def self.list_tag(xm, collection, collection_tag, member_tag)
+  def self.list_tag(xm, collection, collection_tag, member_tag) #:nodoc:
     unless collection.nil? or collection.empty?
       xm.tag!(collection_tag) do |xm|
         collection.each do |value|
@@ -194,16 +191,4 @@ puts template
     end
     xm
   end
-end
-
-if __FILE__ == $0
-  paths = ["/", "/a", "/a/b", "/a/b/c", "/a/d", "/b"]
-  puts DescribedRoutes::make_key_tree(paths){|possible_prefix, route|
-    route[0...possible_prefix.length] == possible_prefix && possible_prefix != "/"
-  }.inspect
-  # => [["/", []], ["/a", [["/a/b", [["/a/b/c", []]]], ["/a/d", []]]], ["/b", []]]
-
-  tree = [["/", []], ["/a", [["/a/b", [["/a/b/c", []]]], ["/a/d", []]]], ["/b", []]]
-  puts DescribedRoutes::map_key_tree(tree){|key, processed_children| {key => processed_children}}.inspect  
-  # => [{"/"=>[]}, {"/a"=>[{"/a/b"=>[{"/a/b/c"=>[]}]}, {"/a/d"=>[]}]}, {"/b"=>[]}]
 end

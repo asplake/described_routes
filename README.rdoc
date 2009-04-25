@@ -2,7 +2,7 @@
 
 == DESCRIPTION:
 
-Outputs hierarchical, framework-neutral descriptions of Rails routes in JSON, YAML, XML and Ruby formats, for potential consumption by client applications (e.g. those based on path-to[http://github.com/asplake/path-to/tree]).
+Outputs hierarchical, framework-neutral descriptions of Rails routes in JSON, YAML, XML and Ruby formats for potential consumption by client applications (e.g. those based on path-to[http://github.com/asplake/path-to/tree]).
 
 == SYNOPSIS:
 
@@ -41,6 +41,34 @@ Outputs hierarchical, framework-neutral descriptions of Rails routes in JSON, YA
         rel: edit
 
 The above YAML is an abbreviated form that shows only name, rel, path_template for each resource in the hierarchy.  The full form includes parameter lists (both mandatory and optional) and options (i.e. HTTP methods).
+
+== DATA STRUCTURES and FORMATS
+
+=== Natural structure
+
+The YAML, JSON and Ruby representations appear as simple array and hash structures (which is what they're generated from internally).  Each resource is represented by a hash of attributes (one of which may be a list of child resources); the top level structure is an array of the resources that don't have parents.
+
+Attributes:
+
++name+::            A Rails-generated route name
++rel+::             An indication of a child resource's relationship to its parent
++options+::         A list of HTTP methods supported by the resource
++path_template+::   A template for the resource's path, in the style of URI Template but as a relative path
++params+::          A list of parameters required by path_template
++optional_params+:: A list of optional parameters that may be incorporated by the path_template
+
+Empty or blank attributes are omitted.
+
+Note that only named routes are considered.  Pre-Rails 2.3 "formatted routes" are explicitly excluded, and for Rails 2.3 onwards, <tt>"format"</tt> is the only entry likely to appear in the optional_parameters attribute.
+
+=== XML
+
+This follows the natural structure but with the following modifications:
+
+* A +Resource+ element for each resource
+* A +Resources+ element for each list of resources (top level or subresources)
+* +Params+ and +OptionalParams+ elements for +params+ and +optional_params+, each containing +param+ elements
+* A single +options+ element contains the applicable HTTP methods as a comma-separated list
 
 == REQUIREMENTS:
 
