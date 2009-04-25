@@ -6,12 +6,20 @@ Outputs hierarchical, framework-neutral descriptions of Rails routes in JSON, YA
 
 == SYNOPSIS:
 
+In your Rakefile:
+
+  require 'tasks/described_routes'
+
+Then:
+
   $ rake --tasks described_routes
   rake described_routes:json        # Describe resource structure in JSON format
   rake described_routes:ruby        # Describe resource structure as a Ruby literal
   rake described_routes:xml         # Describe resource structure in XML format
   rake described_routes:yaml        # Describe resource structure in YAML format
   rake described_routes:yaml_short  # Describe resource structure in YAML format (basic structure only)
+
+For a flavour, try the short form:
 
   $ rake described_routes:yaml_short
   - name: users
