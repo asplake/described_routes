@@ -26,7 +26,6 @@ module DescribedRoutes
 
       # ignore optional format parameter when comparing paths
       key = segs.sub("(.:format)", "")
-
       if resources[key]
         # we've seen the (normalised) path before; add to options
         resources[key]["options"] += options
@@ -44,11 +43,12 @@ module DescribedRoutes
 
         # collect & format optional format parameter
         optional_params = []
-        template = segs.sub("(.:format)") do |match|
+puts template
+        template.sub!("(.{format})") do |match|
           optional_params << "format"
-          "{-prefix|.|format}{format}"
+          "{-prefix|.|format}"
         end
-
+puts template
         # so now we have (for example):
         #   segs              #=> "/users/:user_id/edit(.:format)" (was "/users/:id")
         #   key               #=> "/users/:user_id/edit"
@@ -60,13 +60,14 @@ module DescribedRoutes
         #   name              #=>  "edit_user"
 
         # create a new route hash
-        resources[key]= {
+        resource = {
           "path_template" => template,
           "options" => options,
         }
-        resources[key]["rel"] = action unless action == "index" || action == "show"
-        resources[key]["params"] = params unless params.empty?
-        resources[key]["optional_params"] = optional_params unless optional_params.empty?
+        resource["params"] = params unless params.empty?
+        resource["optional_params"] = optional_params unless optional_params.empty?
+
+        resources[key] = resource
       end
 
       # this may be the first time we've seen a good name for this key
@@ -98,6 +99,43 @@ module DescribedRoutes
     end
   end
 
+  #
+  # Takes the routes from Rails and produces the required tree structure.  #to_yaml and #to_json can
+  # be called on the result directly.  If XML is required, see #resource_xml.
+  #
+  def self.get_resource_tree
+    resources = get_rails_resources
+    resources.delete_if{|k, v| v["name"].blank? or v["name"] =~ /^formatted/}
+
+    key_tree = make_key_tree(resources.keys.sort){|possible_prefix, key|
+      key[0...possible_prefix.length] == possible_prefix && possible_prefix != "/"
+    }
+
+    tree = map_key_tree(key_tree) do |key, children|
+      resource = resources[key]
+      resource["resources"] = children unless children.empty?
+      resource.delete("options") if resource["options"] == [""]
+
+      # compare parent and child names, and populate "rel" with either
+      # 1) a prefix (probably an action name)
+      # 2) a suffix (probably a nested resource)
+      # If neither applies, let's hope the child is identified by parameter (i.e. the parent is a collection)
+      name = resource["name"]
+      prefix = /^(.*)_#{name}$/
+      suffix = /^#{name}_(.*)$/
+      children.each do |child|
+        child_name = child["name"]
+        if child_name =~ prefix
+          child["rel"] = $1
+        elsif child_name =~ suffix
+          child["rel"] = $1
+        end 
+      end
+      
+      resource
+    end
+  end
+
   #:nodoc:
   #
   # Depth-first tree traversal
@@ -110,26 +148,6 @@ module DescribedRoutes
     tree.map do |pair|
       key, children = pair
       blk.call(key, map_key_tree(children, &blk))
-    end
-  end
-
-  #
-  # Takes the routes from Rails and produces the required tree structure.  #to_yaml and #to_json can
-  # be called on the result directly.  If XML is required, see #resource_xml.
-  #
-  def self.get_resource_tree
-    routes = get_rails_resources
-    routes.delete_if{|k, v| v["name"].blank? or v["name"] =~ /^formatted/}
-
-    key_tree = make_key_tree(routes.keys.sort){|possible_prefix, route|
-      route[0...possible_prefix.length] == possible_prefix && possible_prefix != "/"
-    }
-
-    tree = map_key_tree(key_tree) do |key, children|
-      route = routes[key]
-      route["resources"] = children unless children.blank?
-      route.delete("options") if route["options"] == [""]
-      route
     end
   end
 
