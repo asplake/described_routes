@@ -2,7 +2,7 @@
 
 == DESCRIPTION:
 
-Outputs framework-neutral descriptions of Rails routes in JSON, YAML, XML and Ruby formats, for potential consumption by client applications (e.g. those based on path-to[http://github.com/asplake/path-to/tree]).
+Outputs hierarchical, framework-neutral descriptions of Rails routes in JSON, YAML, XML and Ruby formats, for potential consumption by client applications (e.g. those based on path-to[http://github.com/asplake/path-to/tree]).
 
 == SYNOPSIS:
 
@@ -40,9 +40,11 @@ Outputs framework-neutral descriptions of Rails routes in JSON, YAML, XML and Ru
         path_template: /users/{user_id}/edit{-prefix|.|format}
         rel: edit
 
+The above YAML is an abbreviated form that shows only name, rel, path_template for each resource in the hierarchy.  The full form includes parameter lists (both mandatory and optional) and options (i.e. HTTP methods).
+
 == REQUIREMENTS:
 
-Rails.  Note however that the output format is not Rails-specific.  It makes no mention of Rails concepts such as controllers or actions.
+Rails.  Note however that the output format is not Rails-specific.
 
 == INSTALL:
 
