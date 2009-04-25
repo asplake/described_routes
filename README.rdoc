@@ -15,29 +15,29 @@ Outputs framework-neutral descriptions of Rails routes in JSON, YAML, XML and Ru
 
   $ rake described_routes:yaml_short
   - name: users
-    path_template: /users{-prefix|.|format}{format}
+    path_template: /users{-prefix|.|format}
     resources: 
     - name: user
-      path_template: /users/{user_id}{-prefix|.|format}{format}
+      path_template: /users/{user_id}{-prefix|.|format}
       resources: 
       - name: user_articles
         rel: articles
-        path_template: /users/{user_id}/articles{-prefix|.|format}{format}
+        path_template: /users/{user_id}/articles{-prefix|.|format}
         resources: 
         - name: user_article
-          path_template: /users/{user_id}/articles/{article_id}{-prefix|.|format}{format}
+          path_template: /users/{user_id}/articles/{article_id}{-prefix|.|format}
           resources: 
           - name: edit_user_article
-            path_template: /users/{user_id}/articles/{article_id}/edit{-prefix|.|format}{format}
+            path_template: /users/{user_id}/articles/{article_id}/edit{-prefix|.|format}
             rel: edit
         - name: new_user_article
-          path_template: /users/{user_id}/articles/new{-prefix|.|format}{format}
+          path_template: /users/{user_id}/articles/new{-prefix|.|format}
           rel: new
         - name: recent_user_articles
-          path_template: /users/{user_id}/articles/recent{-prefix|.|format}{format}
+          path_template: /users/{user_id}/articles/recent{-prefix|.|format}
           rel: recent
       - name: edit_user
-        path_template: /users/{user_id}/edit{-prefix|.|format}{format}
+        path_template: /users/{user_id}/edit{-prefix|.|format}
         rel: edit
 
 == REQUIREMENTS:
