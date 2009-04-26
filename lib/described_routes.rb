@@ -78,4 +78,12 @@ module DescribedRoutes
       end
     end
   end
+  
+  # Get a hash of all named resources contained in the supplied collection, keyed by resource name
+  def all_by_name(resources, h = {})
+    resources.inject(h) do |hash, resource|
+      hash[resource.name] = resource if resource.name
+      all_by_name(resource.resource, named)
+    end
+  end
 end
