@@ -34,7 +34,7 @@ module DescribedRoutes
     raise ArgumentError.new("not an array") unless parsed.kind_of?(Array)
 
     parsed.map do |hash|
-      DescribedRoute.from_hash(hash)
+      Resource.from_hash(hash)
     end
   end
 
@@ -80,10 +80,12 @@ module DescribedRoutes
   end
   
   # Get a hash of all named resources contained in the supplied collection, keyed by resource name
-  def all_by_name(resources, h = {})
+  def self.all_by_name(resources, h = {})
     resources.inject(h) do |hash, resource|
       hash[resource.name] = resource if resource.name
-      all_by_name(resource.resource, named)
+      all_by_name(resource.resources, hash)
+      hash
     end
+    h
   end
 end

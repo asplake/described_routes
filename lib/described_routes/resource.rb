@@ -36,7 +36,13 @@ module DescribedRoutes
     
     # Create a Resource from its Hash representation
     def self.from_hash(hash)
-      self.new(*%w(name, rel, path_template, params, optional_params, options, resources).map{|k| hash[k]})
+      attributes = %w(name rel path_template params optional_params options).map{|k| hash[k]}
+      if hash["resources"]
+        attributes << hash["resources"].map{|h| from_hash(h)} if hash["resources"]
+      else
+        attributes << nil
+      end
+      self.new(*attributes)
     end
     
     # Convert to a hash (equivalent to its JSON or YAML representation)
@@ -48,24 +54,10 @@ module DescribedRoutes
 
       hash["options"] = options if options && !options.empty?
 
-      hashes = self.class.to_hashes(resources)
+      hashes = DescribedRoutes.to_parsed(resources)
       hash["resources"] = hashes if hashes && !hashes.empty?
       
       hash
-    end
-    
-    # Make a hash of child resources, keyed by rel
-    def by_rel
-      resources.inject({}) do |hash, resource|
-        hash[resource.rel] = resource if resource.rel
-      end
-    end
-    
-    # Make a hash of child resources, keyed by params (sorted)
-    def by_param_set
-      resources.inject({}) do |hash, resource|
-        hash[resource.params.sort] = resource if resource.params && !resource.rel
-      end      
     end
   end
 end
