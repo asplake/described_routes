@@ -2,7 +2,7 @@
 
 == DESCRIPTION:
 
-Outputs hierarchical, framework-neutral descriptions of Rails routes in JSON, YAML, XML and Ruby formats for potential consumption by client applications (e.g. those based on path-to[http://github.com/asplake/path-to/tree]).
+Outputs hierarchical, framework-neutral descriptions of Rails routes in JSON, YAML and XML formats for potential consumption by client applications (e.g. those based on path-to[http://github.com/asplake/path-to/tree]).
 
 == SYNOPSIS:
 

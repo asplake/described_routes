@@ -1,153 +1,67 @@
+require 'described_routes/resource'
 
 module DescribedRoutes
   # rubygem version
-  VERSION = "0.0.1"
+  VERSION = "0.0.2"
   
-  #
-  # Based on the implementation of "rake routes".  Returns a hash of Rails path specifications (slightly normalized)
-  # mapped to hashes of the attributes we need. 
-  #
-  def self.get_rails_resources
-    ::ActionController::Routing::Routes.routes.inject({}) do |resources, route|
-      name = ActionController::Routing::Routes.named_routes.routes.index(route).to_s
-      controller = route.parameter_shell[:controller]
-      action = route.parameter_shell[:action]
-      options = [route.conditions[:method]].flatten.map{|option| option.to_s.upcase}
-      segs = route.segments.inject("") {|str,s| str << s.to_s }
-      segs.chop! if segs.length > 1
+  # Convert an array of Resource objects to array of hashes equivalent to their JSON or YAML representations
+  def self.to_parsed(resources)
+    resources.map{|resource| resource.to_hash}
+  end
+  
+  # Convert an array of Resource objects to JSON
+  def self.to_json(resources)
+    self.to_parsed(resources).to_json
+  end
+  
+  # Convert an array of Resource objects to YAML
+  def self.to_yaml(resources)
+    self.to_parsed(resources).to_yaml
+  end
+  
+  # Create an array of Resource objects from a JSON string
+  def self.parse_json(json)
+    self.from_parsed(JSON.parse(json))
+  end
+  
+  # Create an array of Resource objects from a JSON string
+  def self.parse_yaml(yaml)
+    self.from_parsed(YAML::load(yaml))
+  end
 
-      # prefix :id parameters consistently
-      # TODO - probably a better way to do this, just need a pattern that matches :id and not :id[a-zA-Z0-9_]+
-      segs.gsub!(/:[a-zA-Z0-9_]+/) do |match|
-        if match == ":id" && controller
-          ":#{controller.singularize.sub(/.*\//, "")}_id"
-        else
-          match
-        end
-      end
+  # Create an array of Resource objects from an array of hashes
+  def self.from_parsed(parsed)
+    raise ArgumentError.new("not an array") unless parsed.kind_of?(Array)
 
-      # ignore optional format parameter when comparing paths
-      key = segs.sub("(.:format)", "")
-      if resources[key]
-        # we've seen the (normalised) path before; add to options
-        resources[key]["options"] += options
-      else
-        template = segs
-
-        # collect & format mandatory parameters
-        params = []
-        template.gsub!(/:[a-zA-Z0-9_]+/) do |match|
-          param = match[1..-1]
-          param = controller.singularize.sub(/.*\//, "") + "_id" if param == "id" && controller
-          params << param
-          "{#{param}}"
-        end
-
-        # collect & format optional format parameter
-        optional_params = []
-        template.sub!("(.{format})") do |match|
-          optional_params << "format"
-          "{-prefix|.|format}"
-        end
-
-        # so now we have (for example):
-        #   segs              #=> "/users/:user_id/edit(.:format)" (was "/users/:id")
-        #   key               #=> "/users/:user_id/edit"
-        #   template          #=> "/users/{user_id}/edit"
-        #   params            #=> ["user_id"]
-        #   optional_params   #=> ["format"]
-        #   action            #=> "edit"
-        #   options           #=> ["GET"]
-        #   name              #=>  "edit_user"
-
-        # create a new route hash
-        resource = {
-          "path_template" => template,
-          "options" => options,
-        }
-        resource["params"] = params unless params.empty?
-        resource["optional_params"] = optional_params unless optional_params.empty?
-
-        resources[key] = resource
-      end
-
-      # this may be the first time we've seen a good name for this key
-      resources[key]["name"] ||= name unless name.blank? or name =~ /^formatted/
-
-      resources
+    parsed.map do |hash|
+      DescribedRoute.from_hash(hash)
     end
   end
 
   #
-  # Turns a sorted array of strings into a tree structure as follows:
+  # Produces the XML format, given an XML builder object and an array of Resource objects
   #
-  #   make_key_tree(["/", "/a", "/a/b", "/a/b/c", "/a/d", "/b"]){|possible_prefix, route|
-  #     route[0...possible_prefix.length] == possible_prefix && possible_prefix != "/"
-  #   }
-  #   => [["/", []], ["/a", [["/a/b", [["/a/b/c", []]]], ["/a/d", []]]], ["/b", []]]
-  #
-  # Note that in the example (as in is actual usage in this module), we choose not to to have the root resource ("/") as
-  # the parent of all other resources.
-  #
-  def self.make_key_tree(sorted_keys, &is_prefix) #:nodoc:
-    head, *tail = sorted_keys
-    if head
-      children, siblings = tail.partition{|p| is_prefix.call(head, p)}
-      [[head, make_key_tree(children, &is_prefix)]] + make_key_tree(siblings, &is_prefix)
-    else
-      []
-    end
-  end
+  def self.to_xml(xm, resources)
+    xm.Resources do |xm|
+      resources.each do |resource|
+        xm.Resource do |xm|
+          value_tag(xm, resource, "rel")
+          value_tag(xm, resource, "name")
+          value_tag(xm, resource, "path_template")
 
-  #
-  # Takes the routes from Rails and produces the required tree structure.  #to_yaml and #to_json can
-  # be called on the result directly.  If XML is required, see #resource_xml.
-  #
-  def self.get_resource_tree 
-    resources = get_rails_resources
-    resources.delete_if{|k, v| v["name"].blank? or v["name"] =~ /^formatted/}
+          list_tag(xm, resource["params"], "Params", "param")
+          list_tag(xm, resource["optional_params"], "OptionalParams", "param")
 
-    key_tree = make_key_tree(resources.keys.sort){|possible_prefix, key|
-      key[0...possible_prefix.length] == possible_prefix && possible_prefix != "/"
-    }
+          # could use a list of elements here, but let's follow HTTP's lead and reduce the verbosity
+          options = resource["options"] || []
+          xm.options(options.join(", ")) unless options.empty?
 
-    tree = map_key_tree(key_tree) do |key, children|
-      resource = resources[key]
-      resource["resources"] = children unless children.empty?
-      resource.delete("options") if resource["options"] == [""]
-
-      # compare parent and child names, and populate "rel" with either
-      # 1) a prefix (probably an action name)
-      # 2) a suffix (probably a nested resource)
-      # If neither applies, let's hope the child is identified by parameter (i.e. the parent is a collection)
-      name = resource["name"]
-      prefix = /^(.*)_#{name}$/
-      suffix = /^#{name}_(.*)$/
-      children.each do |child|
-        child_name = child["name"]
-        if child_name =~ prefix
-          child["rel"] = $1
-        elsif child_name =~ suffix
-          child["rel"] = $1
-        end 
+          resources = resource["resources"] || []
+          to_xml(xm, resources) unless resources.empty?
+        end
       end
-      
-      resource
     end
-  end
-
-  #
-  # Depth-first tree traversal
-  #
-  #   tree = [["/", []], ["/a", [["/a/b", [["/a/b/c", []]]], ["/a/d", []]]], ["/b", []]]
-  #   map_key_tree(tree){|key, processed_children| {key => processed_children}}
-  #   # => [{"/"=>[]}, {"/a"=>[{"/a/b"=>[{"/a/b/c"=>[]}]}, {"/a/d"=>[]}]}, {"/b"=>[]}]
-  #
-  def self.map_key_tree(tree, &blk) #:nodoc:
-    tree.map do |pair|
-      key, children = pair
-      blk.call(key, map_key_tree(children, &blk))
-    end
+    xm
   end
 
   def self.value_tag(xm, h, tag) #:nodoc:
@@ -163,32 +77,5 @@ module DescribedRoutes
         end
       end
     end
-  end
-
-  #
-  # Produces the XML format, given an XML builder object and the resource tree.  Note that by design, the 
-  # the generic #to_yaml and #to_json can be called on the tree directly.
-  #
-  def self.resource_xml(xm, tree)
-    xm.Resources do |xm|
-      tree.each do |resource|
-        xm.Resource do |xm|
-          value_tag(xm, resource, "rel")
-          value_tag(xm, resource, "name")
-          value_tag(xm, resource, "path_template")
-
-          list_tag(xm, resource["params"], "Params", "param")
-          list_tag(xm, resource["optional_params"], "OptionalParams", "param")
-
-          # could use a list of elements here, but let's follow HTTP's lead and reduce the verbosity
-          options = resource["options"] || []
-          xm.options(options.join(", ")) unless options.empty?
-
-          resources = resource["resources"] || []
-          resource_xml(xm, resources) unless resources.empty?
-        end
-      end
-    end
-    xm
   end
 end
