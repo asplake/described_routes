@@ -1,5 +1,6 @@
 %w[rubygems rake rake/clean fileutils newgem rubigen].each { |f| require f }
-require File.dirname(__FILE__) + '/lib/described_routes'
+$:.push File.dirname(__FILE__) + '/lib'
+require 'described_routes'
 
 # undefined method `empty?' for nil:NilClass
 # /Library/Ruby/Site/1.8/rubygems/specification.rb:886:in `validate'

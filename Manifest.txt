@@ -1,12 +1,16 @@
 History.txt
+LICENSE
 Manifest.txt
 PostInstall.txt
 README.rdoc
 Rakefile
 lib/described_routes.rb
+lib/described_routes/rails_routes.rb
+lib/described_routes/resource_template.rb
 lib/tasks/described_routes.rb
 script/console
 script/destroy
 script/generate
 test/test_described_routes.rb
 test/test_helper.rb
+test/test_resource_template.rb
