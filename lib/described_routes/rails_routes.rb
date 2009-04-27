@@ -90,7 +90,7 @@ module DescribedRoutes
 
       tree = map_key_tree(key_tree) do |key, children|
         resource = resources[key]
-        resource["resources"] = children unless children.empty?
+        resource["resource_templates"] = children unless children.empty?
         resource.delete("options") if resource["options"] == [""]
 
         # compare parent and child names, and populate "rel" with either
