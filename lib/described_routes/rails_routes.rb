@@ -48,6 +48,7 @@ module DescribedRoutes
             optional_params << "format"
             "{-prefix|.|format}"
           end
+          params -= optional_params
 
           # so now we have (for example):
           #   segs              #=> "/users/:user_id/edit(.:format)" (was "/users/:id")
