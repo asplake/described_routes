@@ -2,7 +2,7 @@ require 'described_routes/resource_template'
 
 module DescribedRoutes
   # rubygem version
-  VERSION = "0.1.2"
+  VERSION = "0.1.3"
   
   # Convert an array of ResourceTemplate objects to array of hashes equivalent to their JSON or YAML representations
   def self.to_parsed(resource_templates)

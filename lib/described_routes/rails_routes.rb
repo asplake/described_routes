@@ -82,6 +82,7 @@ module DescribedRoutes
     # Takes the routes from Rails and produces the required tree structure.
     #
     def self.get_resources(base_url = nil)
+      base_url = base_url.sub(/\/$/, '') if base_url
       resources = get_rails_resources
       resources.delete_if{|k, v| v["name"].blank? or v["name"] =~ /^formatted/}
 
