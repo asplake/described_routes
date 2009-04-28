@@ -16,7 +16,7 @@ namespace :described_routes do
 
   desc "Describe resource structure in YAML format (basic structure only)"
   task :yaml_short => :environment do
-    puts DescribedRoutes::RailsRoutes.get_resources.to_yaml.grep(/name|rel|path_template|resources/)
+    puts DescribedRoutes::RailsRoutes.get_resources.to_yaml.grep(/(name|rel|path_template|uri_template|resources):|^---/)
   end
 
   desc "Describe resource structure in XML format"

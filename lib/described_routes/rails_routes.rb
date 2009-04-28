@@ -81,7 +81,7 @@ module DescribedRoutes
     #
     # Takes the routes from Rails and produces the required tree structure.
     #
-    def self.get_resources
+    def self.get_resources(base_url = nil)
       resources = get_rails_resources
       resources.delete_if{|k, v| v["name"].blank? or v["name"] =~ /^formatted/}
 
@@ -93,6 +93,7 @@ module DescribedRoutes
         resource = resources[key]
         resource["resource_templates"] = children unless children.empty?
         resource.delete("options") if resource["options"] == [""]
+        resource["uri_template"] = base_url + resource["path_template"] if base_url && resource["path_template"]
 
         # compare parent and child names, and populate "rel" with either
         # 1) a prefix (probably an action name)

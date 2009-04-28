@@ -12,6 +12,9 @@ module DescribedRoutes
     # Collection members generally don't need a rel as they are identified by their params
     attr_reader :rel
     
+    # A template for generating URIs.
+    attr_reader :uri_template
+    
     # A template for generating paths relative to the application's base.
     attr_reader :path_template
     
@@ -28,8 +31,8 @@ module DescribedRoutes
     attr_reader :resource_templates
     
     # Initialize a ResourceTemplate.  See the attribute descriptions above for explanations of the parameters.
-    def initialize(name, rel, path_template, params, optional_params, options, resource_templates)
-      @name, @rel, @path_template = name, rel, path_template
+    def initialize(name, rel, uri_template, path_template, params, optional_params, options, resource_templates)
+      @name, @rel, @uri_template, @path_template = name, rel, uri_template, path_template
       @params = params || []
       @optional_params = optional_params || []
       @options = options || []
@@ -38,7 +41,7 @@ module DescribedRoutes
     
     # Create a ResourceTemplate from its Hash representation
     def self.from_hash(hash)
-      attributes = %w(name rel path_template params optional_params options).map{|k| hash[k]}
+      attributes = %w(name rel uri_template path_template params optional_params options).map{|k| hash[k]}
       if hash["resource_templates"]
         attributes << hash["resource_templates"].map{|h| from_hash(h)} if hash["resource_templates"]
       else
@@ -52,6 +55,7 @@ module DescribedRoutes
       hash = {}
       hash["name"] = name if name && !name.empty?
       hash["rel"] = rel if rel && !rel.empty?
+      hash["uri_template"] = path_template if uri_template && !path_template.empty?
       hash["path_template"] = path_template if path_template && !path_template.empty?
 
       hash["options"] = options if options && !options.empty?
