@@ -5,6 +5,7 @@ PostInstall.txt
 README.rdoc
 Rakefile
 lib/described_routes.rb
+lib/described_routes/rails_controller.rb
 lib/described_routes/rails_routes.rb
 lib/described_routes/resource_template.rb
 lib/tasks/described_routes.rb
