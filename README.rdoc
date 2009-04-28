@@ -6,6 +6,8 @@ Outputs hierarchical, framework-neutral descriptions of Rails routes in JSON, YA
 
 == SYNOPSIS:
 
+=== Build-time output
+
 In your Rakefile:
 
   require 'tasks/described_routes'
@@ -50,6 +52,25 @@ For a flavour, try the short form:
 
 The above YAML is an abbreviated form that shows only name, rel, path_template for each resource in the hierarchy.  The full form includes parameter lists (both mandatory and optional) and options (i.e. HTTP methods).
 
+=== Run time
+
+Include the controller, perhaps in an initializer:
+
+  require 'described_routes/rails_controller'
+
+Add the following route in config/routes.rb:
+
+  map.resources :described_routes, :controller => "described_routes/rails"
+
+You (or your client application) can now browse to any of the following:
+
+* .../described_routes.json
+* .../described_routes.xml
+* .../described_routes.yaml
+* .../described_routes.yaml?short=true
+
+If the application has a route named "root", run-time-generated data will include URI templates based on root_url.
+ 
 == DATA STRUCTURES and FORMATS
 
 === Natural structure
@@ -62,6 +83,7 @@ Attributes:
 +rel+::             An indication of a child resource's relationship to its parent
 +options+::         A list of HTTP methods supported by the resource
 +path_template+::   A template for the resource's path, in the style of URI Template but as a relative path
++uri_template+::    A template for the resource's URI (generated only if the root URI is known at generation time)
 +params+::          A list of parameters required by path_template
 +optional_params+:: A list of optional parameters that may be incorporated by the path_template
 
