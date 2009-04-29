@@ -1,4 +1,12 @@
-== 0.1.1 2009-04-24
+== 0.2.0 2009-04-29
+
+* 1 minor enhancement:
+  * add show method to controller
+* other:
+  * add tests
+  * refactoring
+
+== 0.1.1 2009-04-28
 
 * 1 minor enhancement:
   * include uri_template elements in XML

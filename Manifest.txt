@@ -12,6 +12,7 @@ lib/tasks/described_routes.rb
 script/console
 script/destroy
 script/generate
+test/fixtures/described_routes_test.json
 test/test_described_routes.rb
 test/test_helper.rb
 test/test_resource_template.rb
