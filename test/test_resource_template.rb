@@ -20,8 +20,8 @@ class TestResourceTemplate < Test::Unit::TestCase
     assert_kind_of(DescribedRoutes::ResourceTemplate, edit_user_article)
 
     assert_equal("user_article", user_article.name)
-    assert_equal([], user_article.params)
-    assert_equal([], user_article.optional_params)
+    assert_equal(["user_id", "article_id"], user_article.params)
+    assert_equal(["format"], user_article.optional_params)
 
     assert_equal("articles", user_articles.rel)
     assert_nil(user_article.rel)
