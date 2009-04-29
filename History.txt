@@ -1,6 +1,11 @@
 == 0.2.1 2009-04-29
 
 * 1 minor fix:
+  * fix uri_template export, update test fixiture
+
+== 0.2.1 2009-04-29
+
+* 1 minor fix:
   * reinstate params in json and yaml formats
 
 == 0.2.0 2009-04-29

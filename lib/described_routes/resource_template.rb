@@ -55,7 +55,7 @@ module DescribedRoutes
       hash = {}
       hash["name"] = name if name && !name.empty?
       hash["rel"] = rel if rel && !rel.empty?
-      hash["uri_template"] = path_template if uri_template && !uri_template.empty?
+      hash["uri_template"] = uri_template if uri_template && !uri_template.empty?
       hash["path_template"] = path_template if path_template && !path_template.empty?
 
       hash["params"] = params if params && !params.empty?
