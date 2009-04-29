@@ -6,7 +6,7 @@ Outputs hierarchical, framework-neutral descriptions of Rails routes in JSON, YA
 
 == SYNOPSIS:
 
-=== Build-time output
+=== Build time
 
 In your Rakefile:
 
@@ -16,7 +16,6 @@ Then:
 
   $ rake --tasks described_routes
   rake described_routes:json        # Describe resource structure in JSON format
-  rake described_routes:ruby        # Describe resource structure as a Ruby literal
   rake described_routes:xml         # Describe resource structure in XML format
   rake described_routes:yaml        # Describe resource structure in YAML format
   rake described_routes:yaml_short  # Describe resource structure in YAML format (basic structure only)
@@ -62,20 +61,27 @@ Add the following route in config/routes.rb:
 
   map.resources :described_routes, :controller => "described_routes/rails"
 
-You (or your client application) can now browse to any of the following:
+You (or your client application) can now browse to any of the following top level addresses:
 
 * .../described_routes.json
 * .../described_routes.xml
 * .../described_routes.yaml
 * .../described_routes.yaml?short=true
 
-If the application has a route named "root", run-time-generated data will include URI templates based on root_url.
+and for the named route "users" (say):
+
+* .../described_routes/users.json
+* .../described_routes/users.xml
+* .../described_routes/users.yaml
+* .../described_routes/users.yaml?short=true
+
+If the application has a route named "root", run-time-generated data will include uri_template attributes based on root_url in addition to the path_template attributes supported at build time.
  
 == DATA STRUCTURES and FORMATS
 
 === Natural structure
 
-The YAML, JSON and Ruby representations appear as simple array and hash structures (which is what they're generated from internally).  Each resource is represented by a hash of attributes (one of which may be a list of child resources); the top level structure is an array of the resources that don't have parents.
+The YAML and JSON representations appear as simple array and hash structures (which is what they're generated from internally).  Each resource is represented by a hash of attributes (one of which may be a list of child resources); the top level structure is an array of the resources that don't have parents.
 
 Attributes:
 
@@ -95,22 +101,20 @@ Note that only named routes are considered.  Pre-Rails 2.3 "formatted routes" ar
 
 This follows the natural structure but with the following modifications:
 
-* A +Resource+ element for each resource
-* A +Resources+ element for each list of resources (top level or subresources)
+* A +ResourceTemplate+ element for each resource template
+* A +ResourceTemplates+ element for each list of resources (top level or subresources)
 * +Params+ and +OptionalParams+ elements for +params+ and +optional_params+, each containing +param+ elements
 * A single +options+ element contains the applicable HTTP methods as a comma-separated list
 
+Calls to parse_xml will at present result in NoMethodError exceptions being raised.
+
 == REQUIREMENTS:
 
-Rails.  Note however that the output format is not Rails-specific.
+Rails, for the Rake tasks and Rails controller.  The ResourceTemplate class and its formats are however Rails-independent.
 
 == INSTALL:
 
   sudo gem install described_routes
-
-Then add the following to your Rakefile:
-
-  require "tasks/described_routes"
 
 == Author
 

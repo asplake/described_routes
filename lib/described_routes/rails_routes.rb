@@ -1,12 +1,19 @@
-require 'described_routes'
+require 'described_routes/resource_template'
 
 module DescribedRoutes
   module RailsRoutes
     #
+    # Process Rails routes and return an array of DescribedRoutes::ResourceTemplate objects
+    #
+    def self.get_resource_templates(base_url = nil)
+      DescribedRoutes::ResourceTemplate.from_parsed(get_parsed_rails_resources(base_url))
+    end
+
+    #
     # Based on the implementation of "rake routes".  Returns a hash of Rails path specifications (slightly normalized)
     # mapped to hashes of the attributes we need. 
     #
-    def self.get_rails_resources
+    def self.get_rails_resources #:nodoc:
       ActionController::Routing::Routes.routes.inject({}) do |resources, route|
         name = ActionController::Routing::Routes.named_routes.routes.index(route).to_s
         controller = route.parameter_shell[:controller]
@@ -19,7 +26,11 @@ module DescribedRoutes
         # TODO - probably a better way to do this, just need a pattern that matches :id and not :id[a-zA-Z0-9_]+
         segs.gsub!(/:[a-zA-Z0-9_]+/) do |match|
           if match == ":id" && controller
-            ":#{controller.singularize.sub(/.*\//, "")}_id"
+            if controller == "described_routes/rails"
+              "{route_name}"
+            else
+              ":#{controller.singularize.sub(/.*\//, "")}_id"
+            end
           else
             match
           end
@@ -79,9 +90,10 @@ module DescribedRoutes
     end
 
     #
-    # Takes the routes from Rails and produces the required tree structure.
+    # Takes the routes from Rails and produces the required tree structure.  Returns the "parsed" format - i.e. a representation
+    # in Ruby Array and Hash objects
     #
-    def self.get_resources(base_url = nil)
+    def self.get_parsed_rails_resources(base_url = nil) #:nodoc:
       base_url = base_url.sub(/\/$/, '') if base_url
       resources = get_rails_resources
       resources.delete_if{|k, v| v["name"].blank? or v["name"] =~ /^formatted/}
@@ -99,8 +111,8 @@ module DescribedRoutes
         # compare parent and child names, and populate "rel" with either
         # 1) a prefix (probably an action name)
         # 2) a suffix (probably a nested resource)
-        # If neither applies, let's hope the child is identified by parameter (i.e. the parent is a collection)
-        # TODO rewrite this so that it's done when the child is created
+        # 3) the child's name if the parent and child's params are identical
+        # If none of the above applies, the child must be identifable by parameter
         name = resource["name"]
         prefix = /^(.*)_#{name}$/
         suffix = /^#{name}_(.*)$/
@@ -110,13 +122,15 @@ module DescribedRoutes
             child["rel"] = $1
           elsif child_name =~ suffix
             child["rel"] = $1
-          end 
+          elsif child["params"] == resource["params"]
+            child["rel"] = child["name"]
+          end
         end
     
         resource
       end
     end
-
+    
     #
     # Depth-first tree traversal
     #
