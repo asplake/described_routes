@@ -32,7 +32,7 @@ module DescribedRoutes
       respond_to do |format|
         format.html # show.html.erb
         format.json { render :json => resource_template.to_json }
-        format.text { render :text => resource_template.to_text }
+        format.text { render :text => ResourceTemplate.to_text([resource_template]) }
         format.xml do
           render :xml => resource_template.to_xml(Builder::XmlMarkup.new(:indent => 2)).target!
         end

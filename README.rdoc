@@ -71,6 +71,7 @@ You (or your client application) can now browse to any of the following top leve
 * .../described_routes.xml
 * .../described_routes.yaml
 * .../described_routes.yaml?short=true
+* .../described_routes.ytxt
 
 and for the named route "users" (say):
 
@@ -78,25 +79,25 @@ and for the named route "users" (say):
 * .../described_routes/users.xml
 * .../described_routes/users.yaml
 * .../described_routes/users.yaml?short=true
+* .../described_routes/users.txt
 
 If the application has a route named "root", run-time-generated data will include uri_template attributes based on root_url in addition to the path_template attributes supported at build time.
 
 Example:
 
-  $ curl http://localhost:3000/described_routes.txt | head
-    % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                   Dload  Upload   Total   Spent    Left  Speed
-  100  3536  100  3536    0     0   226k      0 --:--:-- --:--:-- --:--:-- 3453k
-  root                   root                                          http://localhost:3000/
-  admin_products         admin_products         GET, POST              http://localhost:3000/admin/products{-prefix|.|format}
-    new_admin_product    new_admin_product      GET                    http://localhost:3000/admin/products/new{-prefix|.|format}
-    {product_id}         admin_product          GET, PUT, DELETE       http://localhost:3000/admin/products/{product_id}{-prefix|.|format}
-      edit               edit_admin_product     GET                    http://localhost:3000/admin/products/{product_id}/edit{-prefix|.|format}
-  described_routes       described_routes       GET, POST              http://localhost:3000/described_routes{-prefix|.|format}
-    new_described_route  new_described_route    GET                    http://localhost:3000/described_routes/new{-prefix|.|format}
-    {route_name}         described_route        GET, PUT, DELETE       http://localhost:3000/described_routes/{route_name}{-prefix|.|format}
-      edit               edit_described_route   GET                    http://localhost:3000/described_routes/{route_name}/edit{-prefix|.|format}
-  pages                  pages                  GET, POST              http://localhost:3000/pages{-prefix|.|format}
+  $ curl http://localhost:3000/described_routes/users.txt
+  users                  users                GET, POST              http://localhost:3000/users{-prefix|.|format}
+    new_user             new_user             GET                    http://localhost:3000/users/new{-prefix|.|format}
+    {user_id}            user                 GET, PUT, DELETE       http://localhost:3000/users/{user_id}{-prefix|.|format}
+      edit               edit_user            GET                    http://localhost:3000/users/{user_id}/edit{-prefix|.|format}
+      articles           user_articles        GET, POST              http://localhost:3000/users/{user_id}/articles{-prefix|.|format}
+        new_user_article new_user_article     GET                    http://localhost:3000/users/{user_id}/articles/new{-prefix|.|format}
+        recent           recent_user_articles GET                    http://localhost:3000/users/{user_id}/articles/recent{-prefix|.|format}
+        {article_id}     user_article         GET, PUT, DELETE       http://localhost:3000/users/{user_id}/articles/{article_id}{-prefix|.|format}
+          edit           edit_user_article    GET                    http://localhost:3000/users/{user_id}/articles/{article_id}/edit{-prefix|.|format}
+      profile            user_profile         GET, PUT, DELETE, POST http://localhost:3000/users/{user_id}/profile{-prefix|.|format}
+        edit             edit_user_profile    GET                    http://localhost:3000/users/{user_id}/profile/edit{-prefix|.|format}
+        new              new_user_profile     GET                    http://localhost:3000/users/{user_id}/profile/new{-prefix|.|format}
 
 == DATA STRUCTURES and FORMATS
 
