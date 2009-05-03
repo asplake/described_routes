@@ -2,7 +2,7 @@
 
 == DESCRIPTION:
 
-Outputs hierarchical, framework-neutral descriptions of Rails routes in JSON, YAML and XML formats for potential consumption by client applications (e.g. those based on path-to[http://github.com/asplake/path-to/tree]).
+Outputs hierarchical, framework-neutral descriptions of Rails routes in JSON, YAML, XML and plain text formats for potential consumption by client applications (e.g. those based on path-to[http://github.com/asplake/path-to/tree]).
 
 == SYNOPSIS:
 
@@ -19,37 +19,41 @@ Then:
   rake described_routes:xml         # Describe resource structure in XML format
   rake described_routes:yaml        # Describe resource structure in YAML format
   rake described_routes:yaml_short  # Describe resource structure in YAML format (basic structure only)
+  rake described_routes:text        # Describe resource structure in text (comparable to "rake routes")
 
-For a flavour, try the short form:
+The text output looks like this:
 
-  $ rake described_routes:yaml_short
-  - name: users
-    path_template: /users{-prefix|.|format}
-    resources: 
-    - name: user
-      path_template: /users/{user_id}{-prefix|.|format}
-      resources: 
-      - name: user_articles
-        rel: articles
-        path_template: /users/{user_id}/articles{-prefix|.|format}
-        resources: 
-        - name: user_article
-          path_template: /users/{user_id}/articles/{article_id}{-prefix|.|format}
-          resources: 
-          - name: edit_user_article
-            path_template: /users/{user_id}/articles/{article_id}/edit{-prefix|.|format}
-            rel: edit
-        - name: new_user_article
-          path_template: /users/{user_id}/articles/new{-prefix|.|format}
-          rel: new
-        - name: recent_user_articles
-          path_template: /users/{user_id}/articles/recent{-prefix|.|format}
-          rel: recent
-      - name: edit_user
-        path_template: /users/{user_id}/edit{-prefix|.|format}
-        rel: edit
+  $ rake described_routes:text
+  (in /Users/asplake/railsapps/testapp)
+  root                   root                                          /
+  admin_products         admin_products         GET, POST              /admin/products{-prefix|.|format}
+    new_admin_product    new_admin_product      GET                    /admin/products/new{-prefix|.|format}
+    {product_id}         admin_product          GET, PUT, DELETE       /admin/products/{product_id}{-prefix|.|format}
+      edit               edit_admin_product     GET                    /admin/products/{product_id}/edit{-prefix|.|format}
+  described_routes       described_routes       GET, POST              /described_routes{-prefix|.|format}
+    new_described_route  new_described_route    GET                    /described_routes/new{-prefix|.|format}
+    {route_name}         described_route        GET, PUT, DELETE       /described_routes/{route_name}{-prefix|.|format}
+      edit               edit_described_route   GET                    /described_routes/{route_name}/edit{-prefix|.|format}
+  pages                  pages                  GET, POST              /pages{-prefix|.|format}
+    new_page             new_page               GET                    /pages/new{-prefix|.|format}
+    {page_id}            page                   GET, PUT, DELETE       /pages/{page_id}{-prefix|.|format}
+      edit               edit_page              GET                    /pages/{page_id}/edit{-prefix|.|format}
+      summary            summary_page           GET                    /pages/{page_id}/summary{-prefix|.|format}
+      toggle_visibility  toggle_visibility_page POST                   /pages/{page_id}/toggle_visibility{-prefix|.|format}
+  users                  users                  GET, POST              /users{-prefix|.|format}
+    new_user             new_user               GET                    /users/new{-prefix|.|format}
+    {user_id}            user                   GET, PUT, DELETE       /users/{user_id}{-prefix|.|format}
+      edit               edit_user              GET                    /users/{user_id}/edit{-prefix|.|format}
+      articles           user_articles          GET, POST              /users/{user_id}/articles{-prefix|.|format}
+        new_user_article new_user_article       GET                    /users/{user_id}/articles/new{-prefix|.|format}
+        recent           recent_user_articles   GET                    /users/{user_id}/articles/recent{-prefix|.|format}
+        {article_id}     user_article           GET, PUT, DELETE       /users/{user_id}/articles/{article_id}{-prefix|.|format}
+          edit           edit_user_article      GET                    /users/{user_id}/articles/{article_id}/edit{-prefix|.|format}
+      profile            user_profile           GET, PUT, DELETE, POST /users/{user_id}/profile{-prefix|.|format}
+        edit             edit_user_profile      GET                    /users/{user_id}/profile/edit{-prefix|.|format}
+        new              new_user_profile       GET                    /users/{user_id}/profile/new{-prefix|.|format}
 
-The above YAML is an abbreviated form that shows only name, rel, path_template for each resource in the hierarchy.  The full form includes parameter lists (both mandatory and optional) and options (i.e. HTTP methods).
+The JSON, XML and YAML formats (of which the YAML is the most readable) are designed for program consumption. 
 
 === Run time
 
@@ -76,7 +80,24 @@ and for the named route "users" (say):
 * .../described_routes/users.yaml?short=true
 
 If the application has a route named "root", run-time-generated data will include uri_template attributes based on root_url in addition to the path_template attributes supported at build time.
- 
+
+Example:
+
+  $ curl http://localhost:3000/described_routes.txt | head
+    % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                   Dload  Upload   Total   Spent    Left  Speed
+  100  3536  100  3536    0     0   226k      0 --:--:-- --:--:-- --:--:-- 3453k
+  root                   root                                          http://localhost:3000/
+  admin_products         admin_products         GET, POST              http://localhost:3000/admin/products{-prefix|.|format}
+    new_admin_product    new_admin_product      GET                    http://localhost:3000/admin/products/new{-prefix|.|format}
+    {product_id}         admin_product          GET, PUT, DELETE       http://localhost:3000/admin/products/{product_id}{-prefix|.|format}
+      edit               edit_admin_product     GET                    http://localhost:3000/admin/products/{product_id}/edit{-prefix|.|format}
+  described_routes       described_routes       GET, POST              http://localhost:3000/described_routes{-prefix|.|format}
+    new_described_route  new_described_route    GET                    http://localhost:3000/described_routes/new{-prefix|.|format}
+    {route_name}         described_route        GET, PUT, DELETE       http://localhost:3000/described_routes/{route_name}{-prefix|.|format}
+      edit               edit_described_route   GET                    http://localhost:3000/described_routes/{route_name}/edit{-prefix|.|format}
+  pages                  pages                  GET, POST              http://localhost:3000/pages{-prefix|.|format}
+
 == DATA STRUCTURES and FORMATS
 
 === Natural structure
