@@ -27,7 +27,7 @@ module DescribedRoutes
         segs.gsub!(/:[a-zA-Z0-9_]+/) do |match|
           if match == ":id" && controller
             if controller == "described_routes/rails"
-              "{route_name}"
+              ":route_name"
             else
               ":#{controller.singularize.sub(/.*\//, "")}_id"
             end

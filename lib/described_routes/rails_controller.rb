@@ -10,6 +10,7 @@ module DescribedRoutes
       respond_to do |format|
         format.html # index.html.erb
         format.json { render :json => ResourceTemplate.to_json(resource_templates) }
+        format.text { render :text => ResourceTemplate.to_text(resource_templates) }
         format.yaml do
           yaml = resource_templates.to_yaml(resource_templates)
           yaml = yaml.grep(/(name|rel|path_template|uri_template|resources):|^---/).to_s if ['true', '1'].member?(params["short"])
@@ -31,13 +32,14 @@ module DescribedRoutes
       respond_to do |format|
         format.html # show.html.erb
         format.json { render :json => resource_template.to_json }
+        format.text { render :text => resource_template.to_text }
+        format.xml do
+          render :xml => resource_template.to_xml(Builder::XmlMarkup.new(:indent => 2)).target!
+        end
         format.yaml do
           yaml = resource_template.to_yaml
           yaml = yaml.grep(/(name|rel|path_template|uri_template|resources):|^---/).to_s if ['true', '1'].member?(params["short"])
           render :text => yaml
-        end
-        format.xml do
-          render :xml => resource_template.to_xml(Builder::XmlMarkup.new(:indent => 2)).target!
         end
       end
     end

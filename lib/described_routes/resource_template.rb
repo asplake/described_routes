@@ -170,6 +170,40 @@ module DescribedRoutes
       end
       h
     end
+    
+    def self.to_table(resource_templates, parent_template = nil, t = [], indent = '')
+      resource_templates.inject(t) do |table, resource_template|
+        if parent_template
+          link = (resource_template.rel || '')
+          new_params = resource_template.params - parent_template.params
+        else
+          link = resource_template.name
+          new_params = resource_template.params
+        end
+        link += new_params.map{|p| "{#{p}}"}.join(', ')
+        table << [
+          indent + link,
+          resource_template.name || '',
+          resource_template.options.join(', '),
+          resource_template.uri_template || resource_template.path_template
+        ] 
+        to_table(resource_template.resource_templates, resource_template, t, indent + '  ')
+      end
+      t
+    end
+    
+    def self.to_text(resource_templates)
+      table = self.to_table(resource_templates)
+      
+      0.upto(2) do |i|
+        width = table.map{|row| row[i].length}.max
+        table.each do |row|
+          row[i] = row[i].ljust(width)
+        end
+      end
+      
+      table.map{|row| row.join(' ')}.join("\n") + "\n"
+    end
   end
 end
 

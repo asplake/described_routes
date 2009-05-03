@@ -30,6 +30,12 @@ namespace :described_routes do
              DescribedRoutes::RailsRoutes.get_resource_templates
            ).target!
   end
+
+  desc "Describe resource structure in text format"
+  task :text => :environment do
+    puts DescribedRoutes::ResourceTemplate.to_text(
+            DescribedRoutes::RailsRoutes.get_resource_templates)
+  end
   
   # unsupported, for testing
   task :ruby => :environment do

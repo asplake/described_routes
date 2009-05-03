@@ -1,3 +1,10 @@
+== 0.3.0 2009-05-03
+
+* 1 major enhancement:
+  * text output:
+    * rake described_routes:text
+    * curl <app>/described_routes.txt
+
 == 0.2.1 2009-04-29
 
 * 1 minor fix:
