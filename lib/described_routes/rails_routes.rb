@@ -69,12 +69,14 @@ module DescribedRoutes
           #   optional_params   #=> ["format"]
           #   action            #=> "edit"
           #   options           #=> ["GET"]
-          #   name              #=>  "edit_user"
+          #   name              #=> "edit_user"
+          #   controller        #=> "rails"
 
           # create a new route hash
           resource = {
             "path_template" => template,
-            "options" => options,
+            "options"       => options,
+            "controller"    => controller
           }
           resource["params"] = params unless params.empty?
           resource["optional_params"] = optional_params unless optional_params.empty?
@@ -104,7 +106,7 @@ module DescribedRoutes
 
       tree = map_key_tree(key_tree) do |key, children|
         resource = resources[key]
-        resource["resource_templates"] = children unless children.empty?
+        
         resource.delete("options") if resource["options"] == [""]
         resource["uri_template"] = base_url + resource["path_template"] if base_url && resource["path_template"]
 
@@ -127,6 +129,17 @@ module DescribedRoutes
           end
         end
     
+        controller = resource["controller"]
+        unless children.empty?
+          resource["resource_templates"] = children.sort_by{|c|
+            [
+              (c["controller"] == controller) ? "" : c["controller"],  # group by controller, parent controller first
+              (c["params"] || []).length,                              # fewer params first
+              c["name"]                                                # make determininistic 
+            ]
+          }
+        end
+
         resource
       end
     end

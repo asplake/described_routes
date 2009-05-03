@@ -26,6 +26,9 @@ class TestResourceTemplate < Test::Unit::TestCase
     assert_equal("articles", user_articles.rel)
     assert_nil(user_article.rel)
     assert_equal("edit", edit_user_article.rel)
+    
+    assert_equal("/users/{user_id}/articles{-prefix|.|format}", user_articles.path_template)
+    assert_equal("http://localhost:3000/users/{user_id}/articles{-prefix|.|format}", user_articles.uri_template)
 
     assert(user_articles.resource_templates.member?(user_article))
     assert(user_article.resource_templates.member?(edit_user_article))
