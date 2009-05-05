@@ -12,7 +12,7 @@ module DescribedRoutes
         format.json { render :json => ResourceTemplate.to_json(resource_templates) }
         format.text { render :text => ResourceTemplate.to_text(resource_templates) }
         format.yaml do
-          yaml = resource_templates.to_yaml(resource_templates)
+          yaml = ResourceTemplate::to_yaml(resource_templates)
           yaml = yaml.grep(/(name|rel|path_template|uri_template|resources):|^---/).to_s if ['true', '1'].member?(params["short"])
           render :text => yaml
         end

@@ -1,3 +1,9 @@
+== 0.3.3 2009-05-05
+
+* Please comment on roadmap at http://positiveincline.com/?p=213
+* 1 minor fix:
+  * fix controller for YAML output
+
 == 0.3.0 2009-05-03
 
 * 1 major enhancement:

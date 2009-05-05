@@ -1,5 +1,7 @@
 = described_routes README
 
+* Please comment on roadmap at http://positiveincline.com/?p=213
+
 == DESCRIPTION:
 
 Outputs hierarchical, framework-neutral descriptions of Rails routes in JSON, YAML, XML and plain text formats for potential consumption by client applications (e.g. those based on path-to[http://github.com/asplake/path-to/tree]).
