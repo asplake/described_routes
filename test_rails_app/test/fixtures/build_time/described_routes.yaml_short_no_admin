@@ -1,0 +1,62 @@
+--- 
+- name: root
+  path_template: /
+- name: described_routes
+  - name: new_described_route
+    path_template: /described_routes/new{-prefix|.|format}
+    rel: new_described_route
+  - name: described_route
+    - name: edit_described_route
+      path_template: /described_routes/{route_name}/edit{-prefix|.|format}
+      rel: edit
+    path_template: /described_routes/{route_name}{-prefix|.|format}
+  path_template: /described_routes{-prefix|.|format}
+- name: pages
+  - name: new_page
+    path_template: /pages/new{-prefix|.|format}
+    rel: new_page
+  - name: page
+    - name: edit_page
+      path_template: /pages/{page_id}/edit{-prefix|.|format}
+      rel: edit
+    - name: summary_page
+      path_template: /pages/{page_id}/summary{-prefix|.|format}
+      rel: summary
+    - name: toggle_visibility_page
+      path_template: /pages/{page_id}/toggle_visibility{-prefix|.|format}
+      rel: toggle_visibility
+    path_template: /pages/{page_id}{-prefix|.|format}
+  path_template: /pages{-prefix|.|format}
+- name: users
+  - name: new_user
+    path_template: /users/new{-prefix|.|format}
+    rel: new_user
+  - name: user
+    - name: edit_user
+      path_template: /users/{user_id}/edit{-prefix|.|format}
+      rel: edit
+    - name: user_articles
+      - name: new_user_article
+        path_template: /users/{user_id}/articles/new{-prefix|.|format}
+        rel: new_user_article
+      - name: recent_user_articles
+        path_template: /users/{user_id}/articles/recent{-prefix|.|format}
+        rel: recent
+      - name: user_article
+        - name: edit_user_article
+          path_template: /users/{user_id}/articles/{article_id}/edit{-prefix|.|format}
+          rel: edit
+        path_template: /users/{user_id}/articles/{article_id}{-prefix|.|format}
+      path_template: /users/{user_id}/articles{-prefix|.|format}
+      rel: articles
+    - name: user_profile
+      - name: edit_user_profile
+        path_template: /users/{user_id}/profile/edit{-prefix|.|format}
+        rel: edit
+      - name: new_user_profile
+        path_template: /users/{user_id}/profile/new{-prefix|.|format}
+        rel: new
+      path_template: /users/{user_id}/profile{-prefix|.|format}
+      rel: profile
+    path_template: /users/{user_id}{-prefix|.|format}
+  path_template: /users{-prefix|.|format}

@@ -36,5 +36,6 @@ task :test do
 end
 
 task :clean do
-  Dir.chdir("test_rails_app"){ sh "rake log:clear tmp:clear" }
+  rubyopt = "-I#{File.dirname(__FILE__) + '/lib'} #{ENV['RUBYOPT']}"
+  Dir.chdir("test_rails_app"){ sh "RUBYOPT=\"#{rubyopt}\" rake log:clear tmp:clear" }
 end
