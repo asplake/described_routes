@@ -39,6 +39,7 @@ test_rails_app/test/fixtures/build_time/described_routes.text
 test_rails_app/test/fixtures/build_time/described_routes.xml
 test_rails_app/test/fixtures/build_time/described_routes.yaml
 test_rails_app/test/fixtures/build_time/described_routes.yaml_short
+test_rails_app/test/fixtures/build_time/described_routes.yaml_short_no_admin
 test_rails_app/test/fixtures/run_time/described_routes.json
 test_rails_app/test/fixtures/run_time/described_routes.text
 test_rails_app/test/fixtures/run_time/described_routes.xml
