@@ -2,11 +2,21 @@ require 'described_routes/resource_template'
 
 module DescribedRoutes
   module RailsRoutes
+    
+    #
+    # Hook to customise the "parsed" (Array/Hash) data.  For example, to remove certain sensitive routes:
+    #
+    #   DescribedRoutes::RailsRoutes.parsed_hook = lambda {|a| a.reject{|h| h["name"] =~ /^admin/}}
+    #
+    mattr_accessor :parsed_hook
+    
     #
     # Process Rails routes and return an array of DescribedRoutes::ResourceTemplate objects
     #
     def self.get_resource_templates(base_url = nil)
-      DescribedRoutes::ResourceTemplate.from_parsed(get_parsed_rails_resources(base_url))
+      parsed = get_parsed_rails_resources(base_url)
+      parsed = parsed_hook.call(parsed) if parsed_hook
+      DescribedRoutes::ResourceTemplate.from_parsed(parsed)
     end
 
     #

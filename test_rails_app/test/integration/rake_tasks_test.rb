@@ -3,6 +3,14 @@ require 'test/test_helper'
 require 'described_routes/rake_task_methods'
 
 class RakeTasksTest < Test::Unit::TestCase
+  def setup
+    DescribedRoutes::RailsRoutes.parsed_hook = nil
+  end
+  
+  def teardown
+    DescribedRoutes::RailsRoutes.parsed_hook = nil
+  end
+  
   def read_fixture(extension)
     File.read(File.dirname(__FILE__) + '/../fixtures/build_time/described_routes.' + extension)
   end
@@ -26,4 +34,9 @@ class RakeTasksTest < Test::Unit::TestCase
   def test_xml
     assert_equal(read_fixture("xml"), DescribedRoutes::RakeTaskMethods.xml)
   end
+  
+  def test_parsed_hook
+    DescribedRoutes::RailsRoutes.parsed_hook = lambda {|a| a.reject{|h| h["name"] =~ /^admin/}}
+    assert_equal(read_fixture("yaml_short_no_admin"), DescribedRoutes::RakeTaskMethods.yaml_short)
+  end  
 end

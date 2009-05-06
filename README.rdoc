@@ -1,6 +1,8 @@
 = described_routes README
 
-Note to reader: Please comment on the roadmap at http://positiveincline.com/?p=213
+Framework-neutral descriptions of Rails routes in JSON, YAML, XML and plain text formats.
+
+Please comment on the roadmap at http://positiveincline.com/?p=213
 
 == DESCRIPTION:
 
@@ -25,8 +27,7 @@ Then:
 
 The text output looks like this:
 
-  $ rake described_routes:text
-  (in /Users/asplake/railsapps/testapp)
+  $ rake --silent described_routes:text
   root                   root                                          /
   admin_products         admin_products         GET, POST              /admin/products{-prefix|.|format}
     new_admin_product    new_admin_product      GET                    /admin/products/new{-prefix|.|format}
@@ -54,6 +55,10 @@ The text output looks like this:
       profile            user_profile           GET, PUT, DELETE, POST /users/{user_id}/profile{-prefix|.|format}
         edit             edit_user_profile      GET                    /users/{user_id}/profile/edit{-prefix|.|format}
         new              new_user_profile       GET                    /users/{user_id}/profile/new{-prefix|.|format}
+
+You can specify the base URL of your application by appending the following 
+parameter "BASE=http://..." to the rake command line.  The output will then 
+include full URI templates.
 
 The JSON, XML and YAML formats (of which the YAML is the most readable) are designed for program consumption. 
 
@@ -105,7 +110,7 @@ Example:
 
 === Natural structure
 
-The YAML and JSON representations appear as simple array and hash structures (which is what they're generated from internally).  Each resource is represented by a hash of attributes (one of which may be a list of child resources); the top level structure is an array of the resources that don't have parents.
+The YAML and JSON representations appear as simple array and hash structures.  Each resource is represented by a hash of attributes (one of which may be a list of child resources); the top level structure is an array of the resources that don't have parents.
 
 Attributes:
 
@@ -131,6 +136,14 @@ This follows the natural structure but with the following modifications:
 * A single +options+ element contains the applicable HTTP methods as a comma-separated list
 
 Calls to parse_xml will at present result in NoMethodError exceptions being raised.
+
+== CUSTOMISATION
+
+It is possible to customise the data collected from Rails, for example to hide sensitive routes:
+
+  DescribedRoutes::RailsRoutes.parsed_hook = lambda {|a| a.reject{|h| h["name"] =~ /^admin/}}
+
+This hook operates on the raw "parsed" (Array/Hash) data before conversion to ResourceTemplate objects. 
 
 == REQUIREMENTS:
 

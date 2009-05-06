@@ -1,52 +1,48 @@
+
+* Framework-neutral metadata describing Rails routes in JSON, YAML, XML and plain text formats.
+* Please comment on the roadmap at http://positiveincline.com/?p=213
+
+== 0.3.5 2009-05-06
+
+* make it possible to customise the data collected from Rails
+
 == 0.3.4 2009-05-06
 
-* Please comment on roadmap at http://positiveincline.com/?p=213 !
-* 2 minor enhancements:
-  * optional BASE parameter: rake described_routes:<format> BASE=http://...
-  * added test_rails_app subproject, included in main project's tests
+* optional BASE parameter: rake described_routes:<format> BASE=http://...
+* added test_rails_app subproject, included in main project's tests
 
 == 0.3.3 2009-05-05
 
-* Please comment on roadmap at http://positiveincline.com/?p=213 !
-* 1 minor fix:
-  * fix controller for YAML output
+* fix controller for YAML output
 
 == 0.3.0 2009-05-03
 
-* 1 major enhancement:
-  * text output:
-    * rake described_routes:text
-    * curl <app>/described_routes.txt
+* text output:
+  * rake described_routes:text
+  * curl <app>/described_routes.txt
 
 == 0.2.1 2009-04-29
 
-* 1 minor fix:
-  * fix uri_template export, update test fixiture
+* fix uri_template export, update test fixiture
 
 == 0.2.1 2009-04-29
 
-* 1 minor fix:
-  * reinstate params in json and yaml formats
+* reinstate params in json and yaml formats
 
 == 0.2.0 2009-04-29
 
-* 1 minor enhancement:
-  * add show method to controller
-* other:
-  * add tests
-  * refactoring
+* add show method to controller
+* add tests
+* refactoring
 
 == 0.1.1 2009-04-28
 
-* 1 minor enhancement:
-  * include uri_template elements in XML
+* include uri_template elements in XML
 
 == 0.1.0 2009-04-24
 
-* 1 major enhancement:
-  * added Rails controller
+* added Rails controller
 
 == 0.0.1 2009-04-24
 
-* 1 major enhancement:
-  * Initial release
+* Initial release
