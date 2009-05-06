@@ -1,6 +1,6 @@
 = described_routes README
 
-* Please comment on roadmap at http://positiveincline.com/?p=213
+Note to reader: Please comment on the roadmap at http://positiveincline.com/?p=213
 
 == DESCRIPTION:
 

@@ -1,6 +1,13 @@
+== 0.3.4 2009-05-06
+
+* Please comment on roadmap at http://positiveincline.com/?p=213 !
+* 2 minor enhancements:
+  * optional BASE parameter: rake described_routes:<format> BASE=http://...
+  * added test_rails_app subproject, included in main project's tests
+
 == 0.3.3 2009-05-05
 
-* Please comment on roadmap at http://positiveincline.com/?p=213
+* Please comment on roadmap at http://positiveincline.com/?p=213 !
 * 1 minor fix:
   * fix controller for YAML output
 

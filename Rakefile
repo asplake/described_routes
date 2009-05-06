@@ -2,21 +2,14 @@
 $:.push File.dirname(__FILE__) + '/lib'
 require 'described_routes'
 
-# undefined method `empty?' for nil:NilClass
-# /Library/Ruby/Site/1.8/rubygems/specification.rb:886:in `validate'
-class NilClass
-  def empty?
-    true
-  end
-end
-
 # Generate all the Rake tasks
 # Run 'rake -T' to see list of generated tasks (from gem root directory)
 $hoe = Hoe.new('described_routes', DescribedRoutes::VERSION) do |p|
   p.developer('Mike Burrows', 'mjb@asplake.co.uk')
   p.changes              = p.paragraphs_of("History.txt", 0..1).join("\n\n")
   p.post_install_message = 'PostInstall.txt' # TODO remove if post-install message not required
-  p.rubyforge_name       = 'describedroutes' # TODO this is default value
+  p.rubyforge_name       = 'describedroutes'
+  p.url = 'http://positiveincline.com/?p=213'
   # p.extra_deps         = [
   #   ['activesupport','>= 2.0.2'],
   # ]
@@ -33,5 +26,15 @@ end
 require 'newgem/tasks' # load /tasks/*.rake
 Dir['tasks/**/*.rake'].each { |t| load t }
 
-# TODO - want other tests/tasks run by default? Add them to the list
-# task :default => [:spec, :features]
+#
+# These add to existing tasks and execute in the ./test_rails_app/ subproject
+#
+
+task :test do
+  rubyopt = "-I#{File.dirname(__FILE__) + '/lib'} #{ENV['RUBYOPT']}"
+  Dir.chdir("test_rails_app"){ sh "RUBYOPT=\"#{rubyopt}\" rake test:integration" }
+end
+
+task :clean do
+  Dir.chdir("test_rails_app"){ sh "rake log:clear tmp:clear" }
+end

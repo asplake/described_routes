@@ -1,0 +1,27 @@
+root                   root                                          http://www.example.com/
+admin_products         admin_products         GET, POST              http://www.example.com/admin/products{-prefix|.|format}
+  new_admin_product    new_admin_product      GET                    http://www.example.com/admin/products/new{-prefix|.|format}
+  {product_id}         admin_product          GET, PUT, DELETE       http://www.example.com/admin/products/{product_id}{-prefix|.|format}
+    edit               edit_admin_product     GET                    http://www.example.com/admin/products/{product_id}/edit{-prefix|.|format}
+described_routes       described_routes       GET, POST              http://www.example.com/described_routes{-prefix|.|format}
+  new_described_route  new_described_route    GET                    http://www.example.com/described_routes/new{-prefix|.|format}
+  {route_name}         described_route        GET, PUT, DELETE       http://www.example.com/described_routes/{route_name}{-prefix|.|format}
+    edit               edit_described_route   GET                    http://www.example.com/described_routes/{route_name}/edit{-prefix|.|format}
+pages                  pages                  GET, POST              http://www.example.com/pages{-prefix|.|format}
+  new_page             new_page               GET                    http://www.example.com/pages/new{-prefix|.|format}
+  {page_id}            page                   GET, PUT, DELETE       http://www.example.com/pages/{page_id}{-prefix|.|format}
+    edit               edit_page              GET                    http://www.example.com/pages/{page_id}/edit{-prefix|.|format}
+    summary            summary_page           GET                    http://www.example.com/pages/{page_id}/summary{-prefix|.|format}
+    toggle_visibility  toggle_visibility_page POST                   http://www.example.com/pages/{page_id}/toggle_visibility{-prefix|.|format}
+users                  users                  GET, POST              http://www.example.com/users{-prefix|.|format}
+  new_user             new_user               GET                    http://www.example.com/users/new{-prefix|.|format}
+  {user_id}            user                   GET, PUT, DELETE       http://www.example.com/users/{user_id}{-prefix|.|format}
+    edit               edit_user              GET                    http://www.example.com/users/{user_id}/edit{-prefix|.|format}
+    articles           user_articles          GET, POST              http://www.example.com/users/{user_id}/articles{-prefix|.|format}
+      new_user_article new_user_article       GET                    http://www.example.com/users/{user_id}/articles/new{-prefix|.|format}
+      recent           recent_user_articles   GET                    http://www.example.com/users/{user_id}/articles/recent{-prefix|.|format}
+      {article_id}     user_article           GET, PUT, DELETE       http://www.example.com/users/{user_id}/articles/{article_id}{-prefix|.|format}
+        edit           edit_user_article      GET                    http://www.example.com/users/{user_id}/articles/{article_id}/edit{-prefix|.|format}
+    profile            user_profile           GET, PUT, DELETE, POST http://www.example.com/users/{user_id}/profile{-prefix|.|format}
+      edit             edit_user_profile      GET                    http://www.example.com/users/{user_id}/profile/edit{-prefix|.|format}
+      new              new_user_profile       GET                    http://www.example.com/users/{user_id}/profile/new{-prefix|.|format}
