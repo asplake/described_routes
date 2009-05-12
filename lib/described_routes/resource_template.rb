@@ -171,6 +171,7 @@ module DescribedRoutes
       h
     end
     
+    # for #to_text
     def self.to_table(resource_templates, parent_template = nil, t = [], indent = '')
       resource_templates.inject(t) do |table, resource_template|
         if parent_template
@@ -192,6 +193,7 @@ module DescribedRoutes
       t
     end
     
+    # text report
     def self.to_text(resource_templates)
       table = self.to_table(resource_templates)
       
@@ -203,6 +205,16 @@ module DescribedRoutes
       end
       
       table.map{|row| row.join(' ')}.join("\n") + "\n"
+    end
+    
+    # returns params and any optional_params in order, removing the parent's params
+    def positional_params(parent)
+      all_params = params + optional_params
+      if parent
+        all_params - parent.params
+      else
+        all_params
+      end
     end
   end
 end

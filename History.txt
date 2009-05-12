@@ -1,6 +1,6 @@
+== 0.3.6 2009-05-12
 
-* Framework-neutral metadata describing Rails routes in JSON, YAML, XML and plain text formats.
-* Please comment on the roadmap at http://positiveincline.com/?p=213
+* add ResourceTemplate#positional_params
 
 == 0.3.5 2009-05-06
 

@@ -4,7 +4,6 @@ require 'described_routes/resource_template'
 class TestResourceTemplate < Test::Unit::TestCase
   attr_reader :json, :resource_templates, :resource_templates_by_name, :user_articles, :user_article, :edit_user_article
   
-  
   def setup
     @json ||= File.read(File.dirname(__FILE__) + "/fixtures/described_routes_test.json")
     @resource_templates = DescribedRoutes::ResourceTemplate.parse_json(json)
@@ -44,5 +43,10 @@ class TestResourceTemplate < Test::Unit::TestCase
     assert_equal(
         JSON.parse(json),
         YAML.load(DescribedRoutes::ResourceTemplate.to_yaml(resource_templates)))
+  end
+  
+  def test_positional_params
+    assert_equal(["user_id", "article_id", "format"], user_article.positional_params(nil))
+    assert_equal(["article_id", "format"], user_article.positional_params(user_articles))
   end
 end

@@ -1,8 +1,8 @@
 = described_routes README
 
-Framework-neutral descriptions of Rails routes in JSON, YAML, XML and plain text formats.
+Framework-neutral descriptions of Rails routes in JSON, YAML, XML and plain text formats.  Also the home (for now at least) of the ResourceTemplate class.
 
-Please comment on the roadmap at http://positiveincline.com/?p=213
+Note to reader: you are invited to comment on the roadmap at http://positiveincline.com/?p=213
 
 == DESCRIPTION:
 
@@ -56,8 +56,7 @@ The text output looks like this:
         edit             edit_user_profile      GET                    /users/{user_id}/profile/edit{-prefix|.|format}
         new              new_user_profile       GET                    /users/{user_id}/profile/new{-prefix|.|format}
 
-You can specify the base URL of your application by appending the following 
-parameter "BASE=http://..." to the rake command line.  The output will then 
+You can specify the base URL of your application by appending "BASE=http://..." to the rake command line.  The output will then 
 include full URI templates.
 
 The JSON, XML and YAML formats (of which the YAML is the most readable) are designed for program consumption. 
