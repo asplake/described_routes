@@ -1,4 +1,5 @@
 require "json"
+require "addressable/template"
 
 module DescribedRoutes
   class ResourceTemplate
@@ -76,7 +77,7 @@ module DescribedRoutes
 
     # Convert to YAML
     def to_yaml
-      to_hash.to_json
+      to_hash.to_yaml
     end
     
     #
@@ -215,6 +216,32 @@ module DescribedRoutes
       else
         all_params
       end
+    end
+    
+    # Partially expand the path_template or uri_template of the given resource templates with the given params,
+    # returning new resource templates
+    def self.partial_expand(resource_templates, actual_params)
+      resource_templates.map do |resource_template|
+        resource_template.partial_expand(actual_params)
+      end
+    end
+    
+    # Return a new resource template with the path_template or uri_template partially expanded with the given params
+    def partial_expand(actual_params)
+      self.class.new(
+          name,
+          rel,
+          partial_expand_uri_template(uri_template, actual_params),
+          partial_expand_uri_template(path_template, actual_params),
+          params - actual_params.keys,
+          optional_params - actual_params.keys,
+          options,
+          self.class.partial_expand(resource_templates, actual_params))
+    end
+    
+    # Partially expand a URI template
+    def partial_expand_uri_template(template, params)#:nodoc:
+      template && Addressable::Template.new(template).partial_expand(params).pattern
     end
   end
 end

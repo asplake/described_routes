@@ -1,12 +1,8 @@
 = described_routes README
 
-Framework-neutral descriptions of Rails routes in JSON, YAML, XML and plain text formats.  Also the home (for now at least) of the ResourceTemplate class.
+Framework-neutral metadata, describing Rails routes in JSON, YAML, XML and plain text formats.  Also the home (for now at least) of the ResourceTemplate class.
 
 Note to reader: you are invited to comment on the roadmap at http://positiveincline.com/?p=213
-
-== DESCRIPTION:
-
-Outputs hierarchical, framework-neutral descriptions of Rails routes in JSON, YAML, XML and plain text formats for potential consumption by client applications (e.g. those based on path-to[http://github.com/asplake/path-to/tree]).
 
 == SYNOPSIS:
 
@@ -105,11 +101,77 @@ Example:
         edit             edit_user_profile    GET                    http://localhost:3000/users/{user_id}/profile/edit{-prefix|.|format}
         new              new_user_profile     GET                    http://localhost:3000/users/{user_id}/profile/new{-prefix|.|format}
 
+==== Partial template expansion
+
+Any query parameters passed to the controller will be used to pre-populate the templates.  In this example, the
+<code>article_id</code> and <code>format</code> parameters have been replaced, leaving <code>article_id</code>:
+
+  $ curl "http://localhost:3000/described_routes/user.text?format=json&user_id=dojo"
+  user                 user                 GET, PUT, DELETE       http://localhost:3000/users/dojo.json
+    edit               edit_user            GET                    http://localhost:3000/users/dojo/edit.json
+    articles           user_articles        GET, POST              http://localhost:3000/users/dojo/articles.json
+      new_user_article new_user_article     GET                    http://localhost:3000/users/dojo/articles/new.json
+      recent           recent_user_articles GET                    http://localhost:3000/users/dojo/articles/recent.json
+      {article_id}     user_article         GET, PUT, DELETE       http://localhost:3000/users/dojo/articles/{article_id}.json
+        edit           edit_user_article    GET                    http://localhost:3000/users/dojo/articles/{article_id}/edit.json
+    profile            user_profile         GET, PUT, DELETE, POST http://localhost:3000/users/dojo/profile.json
+      edit             edit_user_profile    GET                    http://localhost:3000/users/dojo/profile/edit.json
+      new              new_user_profile     GET                    http://localhost:3000/users/dojo/profile/new.json
+
+More typically, JSON, YAML or XML format would be requested.  Their addresses can be referenced in <code><link></code> elements in the
+<code><head></code> section of an HTML page or (better) in HTTP headers, so any resource - regardless of format - can easily link to its
+own instance-specific metadata.
+
+JSON example (after pretty printing):
+
+  $ curl "http://localhost:3000/described_routes/user_articles.yaml?user_id=dojo&format=json"
+  {
+     "name":"user_articles",
+     "rel":"articles",
+     "path_template":"\/users\/dojo\/articles.json",
+     "uri_template":"http:\/\/localhost:3000\/users\/dojo\/articles.json",
+     "options":["GET", "POST"],
+     "resource_templates":[
+        {
+           "name":"new_user_article",
+           "options":["GET"],
+           "path_template":"\/users\/dojo\/articles\/new.json",
+           "uri_template":"http:\/\/localhost:3000\/users\/dojo\/articles\/new.json",
+           "rel":"new_user_article"
+        },
+        {
+           "name":"recent_user_articles",
+           "options":["GET"],
+           "path_template":"\/users\/dojo\/articles\/recent.json",
+           "uri_template":"http:\/\/localhost:3000\/users\/dojo\/articles\/recent.json",
+           "rel":"recent"
+        },
+        {
+           "name":"user_article",
+           "resource_templates":[
+              {
+                 "name":"edit_user_article",
+                 "options":["GET"],
+                 "path_template":"\/users\/dojo\/articles\/{article_id}\/edit.json",
+                 "uri_template":"http:\/\/localhost:3000\/users\/dojo\/articles\/{article_id}\/edit.json",
+                 "rel":"edit",
+                 "params":["article_id"]
+              }
+           ],
+           "options":["GET", "PUT", "DELETE"],
+           "path_template":"\/users\/dojo\/articles\/{article_id}.json",
+           "uri_template":"http:\/\/localhost:3000\/users\/dojo\/articles\/{article_id}.json",
+           "params":["article_id"]
+        }
+     ]
+  }
+
 == DATA STRUCTURES and FORMATS
 
 === Natural structure
 
-The YAML and JSON representations appear as simple array and hash structures.  Each resource is represented by a hash of attributes (one of which may be a list of child resources); the top level structure is an array of the resources that don't have parents.
+The YAML and JSON representations appear as simple array and hash structures.  Each resource is represented by a hash of attributes
+(one of which may be a list of child resources); the top level structure is an array of parentless resources.
 
 Attributes:
 
@@ -136,6 +198,10 @@ This follows the natural structure but with the following modifications:
 
 Calls to parse_xml will at present result in NoMethodError exceptions being raised.
 
+=== Samples
+
+See <code>test_rails_app/test/fixtures</code> for sample outputs in each of the supported formats.
+
 == CUSTOMISATION
 
 It is possible to customise the data collected from Rails, for example to hide sensitive routes:
@@ -147,6 +213,10 @@ This hook operates on the raw "parsed" (Array/Hash) data before conversion to Re
 == REQUIREMENTS:
 
 Rails, for the Rake tasks and Rails controller.  The ResourceTemplate class and its formats are however Rails-independent.
+
+The addressable[http://github.com/sporkmonger/addressable/tree/master] gem, used by the Rails controller for partial template
+expansion.   You will need to grab the latest from github as (at the time of writing) the latest gem package hasn't been released
+to Rubyforge.
 
 == INSTALL:
 

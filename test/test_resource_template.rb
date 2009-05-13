@@ -49,4 +49,13 @@ class TestResourceTemplate < Test::Unit::TestCase
     assert_equal(["user_id", "article_id", "format"], user_article.positional_params(nil))
     assert_equal(["article_id", "format"], user_article.positional_params(user_articles))
   end
+  
+  def test_partial_expand
+    expanded = DescribedRoutes::ResourceTemplate.all_by_name([user_articles.partial_expand("user_id" => "dojo", "format" => "json")])
+    expanded_edit_user_article = expanded["edit_user_article"]
+    
+    assert_equal(["article_id"], expanded_edit_user_article.params)
+    assert(expanded_edit_user_article.optional_params.empty?)
+    assert_equal("/users/dojo/articles/{article_id}/edit.json", expanded_edit_user_article.path_template)
+  end
 end

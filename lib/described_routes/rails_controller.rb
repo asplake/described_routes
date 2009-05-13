@@ -5,7 +5,7 @@ module DescribedRoutes
   class RailsController < ActionController::Base
     def index
       base_url = root_url rescue nil
-      resource_templates = RailsRoutes.get_resource_templates(base_url)
+      resource_templates = ResourceTemplate.partial_expand(RailsRoutes.get_resource_templates(base_url), request.query_parameters)
       
       respond_to do |format|
         format.html # index.html.erb
@@ -28,6 +28,8 @@ module DescribedRoutes
       base_url = root_url rescue nil
       resources = RailsRoutes.get_resource_templates(base_url)
       resource_template = ResourceTemplate.all_by_name(resources)[params[:id]]
+      # TODO 404 if nil
+      resource_template = resource_template.partial_expand(request.query_parameters)
       
       respond_to do |format|
         format.html # show.html.erb
