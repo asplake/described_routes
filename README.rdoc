@@ -1,8 +1,12 @@
 = described_routes
 
-Framework-neutral metadata, describing Rails routes in JSON, YAML, XML and plain text formats.  Also the home (for now at least) of the ResourceTemplate class.
+== DESCRIPTION
 
-See roadmap at http://positiveincline.com/?p=213
+Framework-neutral metadata, describing (among other things) your Rails routes in JSON, YAML, XML and plain text formats.
+
+Also the home (for now at least) of the ResourceTemplate class.
+
+See roadmap for described_routes and path-to[http://github.com/asplake/path-to/tree] at http://positiveincline.com/?p=213.
 
 == SYNOPSIS:
 
