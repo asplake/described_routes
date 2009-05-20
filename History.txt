@@ -1,3 +1,7 @@
+== 0.4.1 2009-05-20
+
+* Configure gem dependency on addressable 2.1.0 (now available on RubyForge)
+
 == 0.4.0 2009-05-13
 
 * Partial template expansion

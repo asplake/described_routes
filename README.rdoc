@@ -1,8 +1,8 @@
-= described_routes README
+= described_routes
 
 Framework-neutral metadata, describing Rails routes in JSON, YAML, XML and plain text formats.  Also the home (for now at least) of the ResourceTemplate class.
 
-Note to reader: you are invited to comment on the roadmap at http://positiveincline.com/?p=213
+See roadmap at http://positiveincline.com/?p=213
 
 == SYNOPSIS:
 
@@ -214,9 +214,7 @@ This hook operates on the raw "parsed" (Array/Hash) data before conversion to Re
 
 Rails, for the Rake tasks and Rails controller.  The ResourceTemplate class and its formats are however Rails-independent.
 
-The addressable[http://github.com/sporkmonger/addressable/tree/master] gem, used by the Rails controller for partial template
-expansion.   You will need to grab the latest from github as (at the time of writing) the latest gem package hasn't been released
-to Rubyforge.
+The addressable[http://github.com/sporkmonger/addressable/tree] gem, 2.1.0 or above.  This is now available as a regular gem install from Rubyforge.
 
 == INSTALL:
 
