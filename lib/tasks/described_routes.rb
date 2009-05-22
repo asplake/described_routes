@@ -12,11 +12,6 @@ namespace :described_routes do
     puts DescribedRoutes::RakeTaskMethods.yaml
   end
 
-  desc 'Describe resource structure in YAML format (basic structure only) (optional: add "BASE=http://...")'
-  task :yaml_short => :environment do
-    puts DescribedRoutes::RakeTaskMethods.yaml_short
-  end
-
   desc 'Describe resource structure in XML format (optional: add "BASE=http://...")'
   task :xml => :environment do
     puts DescribedRoutes::RakeTaskMethods.xml
@@ -29,7 +24,7 @@ namespace :described_routes do
   
   # unsupported
   task :ruby => :environment do
-    puts DescribedRoutes::ResourceTemplate.to_parsed(
+    puts ResourceTemplate.to_parsed(
             DescribedRoutes::RailsRoutes.get_resource_templates).inspect
   end
 

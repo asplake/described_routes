@@ -27,16 +27,7 @@ class RakeTasksTest < Test::Unit::TestCase
     assert_equal(read_fixture("yaml"), DescribedRoutes::RakeTaskMethods.yaml)
   end
 
-  def test_yaml_short
-    assert_equal(read_fixture("yaml_short"), DescribedRoutes::RakeTaskMethods.yaml_short)
-  end
-
   def test_xml
     assert_equal(read_fixture("xml"), DescribedRoutes::RakeTaskMethods.xml)
   end
-  
-  def test_parsed_hook
-    DescribedRoutes::RailsRoutes.parsed_hook = lambda {|a| a.reject{|h| h["name"] =~ /^admin/}}
-    assert_equal(read_fixture("yaml_short_no_admin"), DescribedRoutes::RakeTaskMethods.yaml_short)
-  end  
 end

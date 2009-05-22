@@ -1,3 +1,10 @@
+== 0.5.0 2009-05-22
+
+* API refactor, a possible prelude to new resource_template gem:
+  * Top level class ResourceTemplate (was DescribedRoutes::ResourceTemplate)
+  * New class ResourceTemplate::ResourceTemplates to which most of ResourceTemplate's class methods have been moved
+* Removed the yaml_short format (superseded by the plain text format)
+
 == 0.4.1 2009-05-20
 
 * Configure gem dependency on addressable 2.1.0 (now available on RubyForge)

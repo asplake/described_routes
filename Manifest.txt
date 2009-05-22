@@ -8,7 +8,7 @@ lib/described_routes.rb
 lib/described_routes/rails_controller.rb
 lib/described_routes/rails_routes.rb
 lib/described_routes/rake_task_methods.rb
-lib/described_routes/resource_template.rb
+lib/resource_template.rb
 lib/tasks/described_routes.rb
 script/console
 script/destroy
@@ -38,13 +38,10 @@ test_rails_app/test/fixtures/build_time/described_routes.json
 test_rails_app/test/fixtures/build_time/described_routes.text
 test_rails_app/test/fixtures/build_time/described_routes.xml
 test_rails_app/test/fixtures/build_time/described_routes.yaml
-test_rails_app/test/fixtures/build_time/described_routes.yaml_short
-test_rails_app/test/fixtures/build_time/described_routes.yaml_short_no_admin
 test_rails_app/test/fixtures/run_time/described_routes.json
 test_rails_app/test/fixtures/run_time/described_routes.text
 test_rails_app/test/fixtures/run_time/described_routes.xml
 test_rails_app/test/fixtures/run_time/described_routes.yaml
-test_rails_app/test/fixtures/run_time/described_routes.yaml_short
 test_rails_app/test/integration/described_routes_run_time_test.rb
 test_rails_app/test/integration/rake_tasks_test.rb
 test_rails_app/test/test_helper.rb

@@ -4,35 +4,27 @@ module DescribedRoutes
   module RakeTaskMethods
     # Describe resource structure in JSON format
     def self.json
-      DescribedRoutes::ResourceTemplate.to_json(
-              DescribedRoutes::RailsRoutes.get_resource_templates(ENV['BASE']))
+      get_routes.to_json
     end
 
     # "Describe resource structure in YAML format
     def self.yaml
-      DescribedRoutes::ResourceTemplate.to_yaml(
-              DescribedRoutes::RailsRoutes.get_resource_templates(ENV['BASE']))
-    end
-
-    # Describe resource structure in YAML format (basic structure only)
-    def self.yaml_short
-      DescribedRoutes::ResourceTemplate.to_yaml(
-              DescribedRoutes::RailsRoutes.get_resource_templates(ENV['BASE'])).grep(
-                  /(name|rel|path_template|uri_template|resources):|^---/).join
+      get_routes.to_yaml
     end
 
     # Describe resource structure in XML format
     def self.xml
-      DescribedRoutes::ResourceTemplate.to_xml(
-               Builder::XmlMarkup.new(:indent => 2),
-               DescribedRoutes::RailsRoutes.get_resource_templates(ENV['BASE'])
-             ).target!
+      get_routes.to_xml(Builder::XmlMarkup.new(:indent => 2)).target!
     end
 
     # Describe resource structure in text format
     def self.text
-      DescribedRoutes::ResourceTemplate.to_text(
-              DescribedRoutes::RailsRoutes.get_resource_templates(ENV['BASE']))
+      get_routes.to_text
+    end
+
+    # Gets the application's routes
+    def self.get_routes
+      DescribedRoutes::RailsRoutes.get_resource_templates(ENV['BASE'])
     end
   end
 end

@@ -22,7 +22,6 @@ Then:
   rake described_routes:json        # Describe resource structure in JSON format
   rake described_routes:xml         # Describe resource structure in XML format
   rake described_routes:yaml        # Describe resource structure in YAML format
-  rake described_routes:yaml_short  # Describe resource structure in YAML format (basic structure only)
   rake described_routes:text        # Describe resource structure in text (comparable to "rake routes")
 
 The text output looks like this:
@@ -76,7 +75,6 @@ You (or your client application) can now browse to any of the following top leve
 * .../described_routes.json
 * .../described_routes.xml
 * .../described_routes.yaml
-* .../described_routes.yaml?short=true
 * .../described_routes.ytxt
 
 and for the named route "users" (say):
@@ -84,7 +82,6 @@ and for the named route "users" (say):
 * .../described_routes/users.json
 * .../described_routes/users.xml
 * .../described_routes/users.yaml
-* .../described_routes/users.yaml?short=true
 * .../described_routes/users.txt
 
 If the application has a route named "root", run-time-generated data will include uri_template attributes based on root_url in addition to the path_template attributes supported at build time.

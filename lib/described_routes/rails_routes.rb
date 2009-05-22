@@ -1,4 +1,4 @@
-require 'described_routes/resource_template'
+require 'resource_template'
 
 module DescribedRoutes
   module RailsRoutes
@@ -11,12 +11,12 @@ module DescribedRoutes
     mattr_accessor :parsed_hook
     
     #
-    # Process Rails routes and return an array of DescribedRoutes::ResourceTemplate objects
+    # Process Rails routes and return an array of ResourceTemplate objects
     #
     def self.get_resource_templates(base_url = nil)
       parsed = get_parsed_rails_resources(base_url)
       parsed = parsed_hook.call(parsed) if parsed_hook
-      DescribedRoutes::ResourceTemplate.from_parsed(parsed)
+      ResourceTemplate::ResourceTemplates.new(parsed)
     end
 
     #
