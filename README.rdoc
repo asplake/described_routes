@@ -24,7 +24,7 @@ Then:
   rake described_routes:yaml        # Describe resource structure in YAML format
   rake described_routes:text        # Describe resource structure in text (comparable to "rake routes")
 
-The text output looks like this:
+The JSON, XML and YAML formats (of which the YAML is the most readable) are designed for program consumption.  The more human-friendly text output looks like this:
 
   $ rake --silent described_routes:text
   root                   root                                          /
@@ -57,8 +57,6 @@ The text output looks like this:
 
 You can specify the base URL of your application by appending "BASE=http://..." to the rake command line.  The output will then 
 include full URI templates.
-
-The JSON, XML and YAML formats (of which the YAML is the most readable) are designed for program consumption. 
 
 === Run time
 

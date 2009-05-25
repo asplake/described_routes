@@ -1,3 +1,8 @@
+== 0.5.1 2009-05-22
+
+* Add ResourceTemplate::ResourceTemplate.find_by_rel
+* More low-level refactoring
+
 == 0.5.0 2009-05-22
 
 * API refactor, a possible prelude to new resource_template gem:

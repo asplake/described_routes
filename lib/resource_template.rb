@@ -12,9 +12,6 @@ class ResourceTemplate
   # Collection members generally don't need a rel as they are identified by their params
   attr_reader :rel
   
-  # A template for generating URIs.
-  attr_reader :uri_template
-  
   # A template for generating paths relative to the application's base.
   attr_reader :path_template
   
@@ -115,7 +112,7 @@ class ResourceTemplate
     end
   end
 
-  # returns params and any optional_params in order, removing the parent's params
+  # Returns params and any optional_params in order, removing the parent's params
   def positional_params(parent)
     all_params = params + optional_params
     if parent
@@ -123,6 +120,40 @@ class ResourceTemplate
     else
       all_params
     end
+  end
+  
+  # Returns this template's URI template, or one constructed from the given base and path template.
+  def uri_template(base=nil)
+    if @uri_template
+      @uri_template
+    elsif base && path_template
+      base + path_template
+    end
+  end
+  
+  # Returns an expanded URI template with template variables filled from the given params hash.
+  # Raises ArgumentError if params doesn't contain all mandatory params.
+  def uri_for(params_hash, base=nil)
+    missing_params = params - params_hash.keys
+    unless missing_params.empty?
+      raise ArgumentError.new("missing params #{missing_params.join(', ')}")
+    end
+    
+    t = uri_template(base)
+    unless t
+      raise RuntimeError.new("uri_template(#{base.inspect})=nil; path_template=#{path_template.inspect}")
+    end
+    
+    Addressable::Template.new(t).expand(params_hash).to_s
+  end
+  
+  # Returns an expanded path template with template variables filled from the given params hash.
+  # Raises ArgumentError if params doesn't contain all mandatory params, and a RuntimeError if there is no path_template.
+  def path_for(params_hash)
+    missing_params = params - params_hash.keys
+    raise ArgumentError.new("missing params #{missing_params.join(', ')}") unless missing_params.empty?
+    raise RuntimeError.new("#path_for called on resource template #{name.inspect} that has no path_template") if path_template.nil?
+    Addressable::Template.new(path_template).expand(params_hash).to_s
   end
   
   # Return a new resource template with the path_template or uri_template partially expanded with the given params
@@ -141,6 +172,11 @@ class ResourceTemplate
   # Partially expand a URI template
   def partial_expand_uri_template(template, params)#:nodoc:
     template && Addressable::Template.new(template).partial_expand(params).pattern
+  end
+  
+  # Find member ResourceTemplate objects with the given rel
+  def find_by_rel(rel)
+    resource_templates.select{|resource_template| resource_template.rel == rel}
   end
   
   class ResourceTemplates < Array
@@ -202,7 +238,7 @@ class ResourceTemplate
       end
       xm
     end
-
+    
     # Get a hash of all named ResourceTemplate objects contained in the supplied collection, keyed by name
     def all_by_name(h = {})
       inject(h) do |hash, resource_template|

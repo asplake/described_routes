@@ -45,6 +45,11 @@ class TestResourceTemplate < Test::Unit::TestCase
         YAML.load(resource_templates.to_yaml))
   end
   
+  def test_find_by_rel
+    assert_equal([user_article], user_articles.find_by_rel(nil))
+    assert_equal([edit_user_article], user_article.find_by_rel('edit'))
+  end
+  
   def test_positional_params
     assert_equal(['user_id', 'article_id', 'format'], user_article.positional_params(nil))
     assert_equal(['article_id', 'format'], user_article.positional_params(user_articles))
@@ -57,5 +62,41 @@ class TestResourceTemplate < Test::Unit::TestCase
     assert_equal(['article_id'], expanded_edit_user_article.params)
     assert(expanded_edit_user_article.optional_params.empty?)
     assert_equal('/users/dojo/articles/{article_id}/edit.json', expanded_edit_user_article.path_template)
+  end  
+  
+  def test_uri_for
+    assert_equal('http://localhost:3000/users/dojo/articles', user_articles.uri_for('user_id' => 'dojo'))
+    assert_equal('http://localhost:3000/users/dojo/articles.json', user_articles.uri_for('user_id' => 'dojo', 'format' => 'json'))
+  end
+  
+  def test_uri_for_with_missing_params
+    assert_raises(ArgumentError) do
+      user_articles.uri_for('format' => 'json') # no user_id param
+    end
+  end
+  
+  def test_uri_for_with_no_uri_template
+    users = ResourceTemplate.from_hash({'path_template' => '/users'})
+    assert_raises(RuntimeError) do
+      users.uri_for({})
+    end
+    assert_equal('http://localhost:3000/users', users.uri_for({}, 'http://localhost:3000'))
+  end
+
+  def test_path_for
+    assert_equal('/users/dojo/articles', user_articles.path_for('user_id' => 'dojo'))
+    assert_equal('/users/dojo/articles.json', user_articles.path_for('user_id' => 'dojo', 'format' => 'json'))
+  end
+  
+  def test_path_for_with_missing_params
+    assert_raises(ArgumentError) do
+      user_articles.path_for('format' => 'json') # no user_id param
+    end
+  end
+  
+  def test_path_for_with_no_path_template
+    assert_raises(RuntimeError) do
+      ResourceTemplate.from_hash({}).path_for({}) # no path_template
+    end
   end
 end
