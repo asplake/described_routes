@@ -6,7 +6,7 @@ class TestResourceTemplate < Test::Unit::TestCase
   
   def setup
     @json ||= File.read(File.dirname(__FILE__) + '/fixtures/described_routes_test.json')
-    @resource_templates = ResourceTemplate::ResourceTemplates.parse_json(json)
+    @resource_templates = ResourceTemplate::ResourceTemplates.new(JSON.parse(@json))
     @resource_templates_by_name = @resource_templates.all_by_name
     @user_articles = @resource_templates_by_name['user_articles']
     @user_article = @resource_templates_by_name['user_article']
@@ -76,7 +76,7 @@ class TestResourceTemplate < Test::Unit::TestCase
   end
   
   def test_uri_for_with_no_uri_template
-    users = ResourceTemplate.from_hash({'path_template' => '/users'})
+    users = ResourceTemplate.new('path_template' => '/users')
     assert_raises(RuntimeError) do
       users.uri_for({})
     end
@@ -96,7 +96,7 @@ class TestResourceTemplate < Test::Unit::TestCase
   
   def test_path_for_with_no_path_template
     assert_raises(RuntimeError) do
-      ResourceTemplate.from_hash({}).path_for({}) # no path_template
+      ResourceTemplate.new.path_for({}) # no path_template
     end
   end
 end

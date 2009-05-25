@@ -27,25 +27,35 @@ class ResourceTemplate
   # Nested resource templates, a Resources object
   attr_reader :resource_templates
   
-  # Initialize a ResourceTemplate.  See the attribute descriptions above for explanations of the parameters.
-  def initialize(name, rel, uri_template, path_template, params, optional_params, options, resource_templates)
-    @name, @rel, @uri_template, @path_template = name, rel, uri_template, path_template
-    @params = params || []
-    @optional_params = optional_params || []
-    @options = options || []
-    @resource_templates = resource_templates || Resources.new
-  end
-  
-  # Create a ResourceTemplate from its Hash representation
-  def self.from_hash(hash)
-    attributes = %w(name rel uri_template path_template params optional_params options).map{|k| hash[k]}
-    attributes << ResourceTemplates.new(hash["resource_templates"])
-    self.new(*attributes)
+  #
+  # Initialize a ResourceTemplate from a hash.  For example:
+  #
+  #   user_articles = ResourceTemplate.new(
+  #                       "name"               => "user_articles",
+  #                       "rel"                => "articles",
+  #                       "uri_template"       => "http://example.com/users/{user_id}/articles{-prefix|.|format}",
+  #                       "path_template"      => "/users/{user_id}/articles{-prefix|.|format}",
+  #                       "params"             => ["user_id"],
+  #                       "optional_params"    => ["format"],
+  #                       "resource_templates" => [user_article, new_user_article])
+  #
+  # <code>resource_templates</code> (if provided) can be a ResourceTemplates object, an array of ResourceTemplate objects
+  # or an array of hashes.  This last option makes it easy to initialize a whole hierarchy directly from deserialised JSON or YAML
+  # objects, e.g.:
+  #
+  #   user_articles = ResourceTemplate.new(JSON.parse(json))
+  #   user_articles = ResourceTemplate.new(YAML.load(yaml))
+  #
+  def initialize(hash={})
+    @name, @rel, @uri_template, @path_template = %w(name rel uri_template path_template).map{|attr| hash[attr]}
+    @params, @optional_params, @options = %w(params optional_params options).map{|attr| hash[attr] || []}
+    @resource_templates = ResourceTemplates.new(hash["resource_templates"])
   end
   
   # Convert to a hash (equivalent to its JSON or YAML representation)
   def to_hash
     hash = {}
+    
     hash["name"] = name if name && !name.empty?
     hash["rel"] = rel if rel && !rel.empty?
     hash["uri_template"] = uri_template if uri_template && !uri_template.empty?
@@ -53,7 +63,6 @@ class ResourceTemplate
 
     hash["params"] = params if params && !params.empty?
     hash["optional_params"] = optional_params if optional_params && !optional_params.empty?
-
     hash["options"] = options if options && !options.empty?
 
     hash["resource_templates"] = resource_templates.to_parsed if !resource_templates.empty?
@@ -159,14 +168,14 @@ class ResourceTemplate
   # Return a new resource template with the path_template or uri_template partially expanded with the given params
   def partial_expand(actual_params)
     self.class.new(
-        name,
-        rel,
-        partial_expand_uri_template(uri_template, actual_params),
-        partial_expand_uri_template(path_template, actual_params),
-        params - actual_params.keys,
-        optional_params - actual_params.keys,
-        options,
-        resource_templates.partial_expand(actual_params))
+        "name"               => name,
+        "rel"                => rel,
+        "uri_template"       => partial_expand_uri_template(uri_template, actual_params),
+        "path_template"      => partial_expand_uri_template(path_template, actual_params),
+        "params"             => params - actual_params.keys,
+        "optional_params"    => optional_params - actual_params.keys,
+        "options"            => options,
+        "resource_templates" => resource_templates.partial_expand(actual_params))
   end
   
   # Partially expand a URI template
@@ -189,22 +198,12 @@ class ResourceTemplate
           if r.kind_of?(ResourceTemplate)
             push(r)
           elsif r.kind_of?(Hash)
-            push(ResourceTemplate.from_hash(r))
+            push(ResourceTemplate.new(r))
           else
             raise ArgumentError.new("#{r.inspect} is neither a ResourceTemplate nor a Hash")
           end
         end
       end
-    end
-
-    # Create Resources from a YAML string
-    def self.parse_yaml(yaml)
-      new(YAML::load(yaml))
-    end
-
-    # Create Resources from a JSON string
-    def self.parse_json(json)
-      new(JSON.parse(json))
     end
 
     # Create Resources from an XML string
