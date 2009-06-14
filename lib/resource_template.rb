@@ -27,6 +27,9 @@ class ResourceTemplate
   # Nested resource templates, a Resources object
   attr_reader :resource_templates
   
+  # Inverse of resource_templates
+  attr_reader :parent
+  
   #
   # Initialize a ResourceTemplate from a hash.  For example:
   #
@@ -46,10 +49,11 @@ class ResourceTemplate
   #   user_articles = ResourceTemplate.new(JSON.parse(json))
   #   user_articles = ResourceTemplate.new(YAML.load(yaml))
   #
-  def initialize(hash={})
+  def initialize(hash={}, parent=nil)
     @name, @rel, @uri_template, @path_template = %w(name rel uri_template path_template).map{|attr| hash[attr]}
     @params, @optional_params, @options = %w(params optional_params options).map{|attr| hash[attr] || []}
-    @resource_templates = ResourceTemplates.new(hash["resource_templates"])
+    @resource_templates = ResourceTemplates.new(hash["resource_templates"], self)
+    @parent = parent
   end
   
   # Convert to a hash (equivalent to its JSON or YAML representation)
@@ -190,7 +194,7 @@ class ResourceTemplate
   
   class ResourceTemplates < Array
     # Initialize Resources (i.e. a new collection of ResourceTemplate objects) from given collection of ResourceTemplates or hashes
-    def initialize(collection=[])
+    def initialize(collection=[], parent=nil)
       if collection
         raise ArgumentError.new("#{collection.inspect} is not a collection") unless collection.kind_of?(Enumerable)
 
@@ -198,7 +202,7 @@ class ResourceTemplate
           if r.kind_of?(ResourceTemplate)
             push(r)
           elsif r.kind_of?(Hash)
-            push(ResourceTemplate.new(r))
+            push(ResourceTemplate.new(r, parent))
           else
             raise ArgumentError.new("#{r.inspect} is neither a ResourceTemplate nor a Hash")
           end
@@ -267,7 +271,6 @@ class ResourceTemplate
         ] 
         resource_template.resource_templates.to_table(resource_template, t, indent + '  ')
       end
-      t
     end
   
     # text report

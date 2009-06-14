@@ -99,4 +99,10 @@ class TestResourceTemplate < Test::Unit::TestCase
       ResourceTemplate.new.path_for({}) # no path_template
     end
   end
+  
+  def test_parent
+    assert_equal("user", user_articles.parent.name)
+    assert_equal("users", user_articles.parent.parent.name)
+    assert_nil(user_articles.parent.parent.parent)
+  end
 end
