@@ -2,9 +2,7 @@
 
 == DESCRIPTION
 
-Framework-neutral metadata, describing (among other things) your Rails routes in JSON, YAML, XML and plain text formats.
-
-Also the home (for now at least) of the ResourceTemplate class.
+Dynamic, framework-neutral metadata describing path/URI structures, with natural translations to/from JSON, YAML and XML.  Bonus features: easy Rails integration and a plain text report format!
 
 See roadmap for described_routes and path-to[http://github.com/asplake/path-to/tree] at http://positiveincline.com/?p=213.
 
