@@ -203,6 +203,16 @@ class ResourceTemplate
     resource_templates.select{|resource_template| matching_rel === resource_template.rel}
   end
   
+  # self and descendants
+  def all_preorder
+    [self] + resource_templates.all_preorder
+  end
+  
+  # defendants and self
+  def all_postorder
+    resource_templates.all_postorder + [self]
+  end
+  
   class ResourceTemplates < Array
     # Initialize Resources (i.e. a new collection of ResourceTemplate objects) from given collection of ResourceTemplates or hashes
     def initialize(collection=[], parent=nil)
@@ -261,6 +271,20 @@ class ResourceTemplate
         hash
       end
       h
+    end
+    
+    # All members and their descendants, descendants last
+    def all_preorder
+      inject([]) do |a, resource_template|
+        a += resource_template.all_preorder
+      end
+    end
+
+    # All members and their descendants, descendants first
+    def all_postorder
+      inject([]) do |a, resource_template|
+        a += resource_template.all_postorder
+      end
     end
   
     # for #to_text

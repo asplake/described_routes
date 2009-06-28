@@ -2,12 +2,13 @@ require 'test/unit'
 require 'resource_template'
 
 class TestResourceTemplate < Test::Unit::TestCase
-  attr_reader :json, :resource_templates, :resource_templates_by_name, :user_articles, :user_article, :edit_user_article
+  attr_reader :json, :resource_templates, :resource_templates_by_name, :user, :user_articles, :user_article, :edit_user_article
   
   def setup
     @json ||= File.read(File.dirname(__FILE__) + '/fixtures/described_routes_test.json')
     @resource_templates = ResourceTemplate::ResourceTemplates.new(JSON.parse(@json))
     @resource_templates_by_name = @resource_templates.all_by_name
+    @user = @resource_templates_by_name['user']
     @user_articles = @resource_templates_by_name['user_articles']
     @user_article = @resource_templates_by_name['user_article']
     @edit_user_article = @resource_templates_by_name['edit_user_article']
@@ -127,5 +128,39 @@ class TestResourceTemplate < Test::Unit::TestCase
         }
       ],
       user_articles.resource_templates.expand_links({'user_id' => 'dojo'}).to_parsed)
+  end
+  
+  def test_all_preorder
+    assert_equal(
+      [
+        "user",
+        "user_articles",
+        "user_article",
+        "edit_user_article",
+        "new_user_article",
+        "recent_user_articles",
+        "edit_user",
+        "user_profile",
+        "edit_user_profile",
+        "new_user_profile"
+      ],
+      user.all_preorder.map{|rt| rt.name})
+  end
+  
+  def test_all_postorder
+    assert_equal(
+      [
+        "edit_user_article",
+        "user_article",
+        "new_user_article",
+        "recent_user_articles",
+        "user_articles",
+        "edit_user",
+        "edit_user_profile",
+        "new_user_profile",
+        "user_profile",
+        "user"
+      ],
+      user.all_postorder.map{|rt| rt.name})
   end
 end

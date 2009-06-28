@@ -1,3 +1,7 @@
+== 0.6.1 2009-06-28
+
+* Add all_preorder and all_postorder to ResourceTemplate and ResourceTemplates
+
 == 0.6.0 2009-06-28
 
 * Add automatic link header/element generation
