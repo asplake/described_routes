@@ -105,4 +105,27 @@ class TestResourceTemplate < Test::Unit::TestCase
     assert_equal("users", user_articles.parent.parent.name)
     assert_nil(user_articles.parent.parent.parent)
   end
+  
+  def test_expand_links
+    assert_equal(
+      [
+        {
+          "name"            => "new_user_article",
+          "options"         => ["GET"],
+          "path_template"   => "/users/dojo/articles/new{-prefix|.|format}",
+          "uri_template"    => "http://localhost:3000/users/dojo/articles/new{-prefix|.|format}",
+          "rel"             => "new_user_article",
+          "optional_params" => ["format"]
+        },
+        {
+          "name"            => "recent_user_articles",
+          "options"         => ["GET"],
+          "path_template"   => "/users/dojo/articles/recent{-prefix|.|format}",
+          "uri_template"    => "http://localhost:3000/users/dojo/articles/recent{-prefix|.|format}",
+          "rel"             => "recent",
+          "optional_params" => ["format"]
+        }
+      ],
+      user_articles.resource_templates.expand_links({'user_id' => 'dojo'}).to_parsed)
+  end
 end

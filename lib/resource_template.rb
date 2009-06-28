@@ -160,6 +160,11 @@ class ResourceTemplate
     Addressable::Template.new(t).expand(params_hash).to_s
   end
   
+  # Returns a URI (assuming the template needs to parameters!)
+  def uri
+    uri_for({}, nil)
+  end
+  
   # Returns an expanded path template with template variables filled from the given params hash.
   # Raises ArgumentError if params doesn't contain all mandatory params, and a RuntimeError if there is no path_template.
   def path_for(params_hash)
@@ -169,7 +174,13 @@ class ResourceTemplate
     Addressable::Template.new(path_template).expand(params_hash).to_s
   end
   
-  # Return a new resource template with the path_template or uri_template partially expanded with the given params
+  # Returns a path (assuming the template needs to parameters!)
+  def path
+    path_for({})
+  end
+  
+  # Return a new resource template with the path_template or uri_template partially expanded with the given params; does the same
+  # recursively descending through child resource templates.
   def partial_expand(actual_params)
     self.class.new(
         "name"               => name,
@@ -187,9 +198,9 @@ class ResourceTemplate
     template && Addressable::Template.new(template).partial_expand(params).pattern
   end
   
-  # Find member ResourceTemplate objects with the given rel
-  def find_by_rel(rel)
-    resource_templates.select{|resource_template| resource_template.rel == rel}
+  # Find member ResourceTemplate objects matching the given rel
+  def find_by_rel(matching_rel)
+    resource_templates.select{|resource_template| matching_rel === resource_template.rel}
   end
   
   class ResourceTemplates < Array
@@ -290,7 +301,24 @@ class ResourceTemplate
     # Partially expand the path_template or uri_template of the given resource templates with the given params,
     # returning new resource templates
     def partial_expand(actual_params)
-      self.class.new(map{|resource_template| resource_template.partial_expand(actual_params)})
+      ResourceTemplates.new(map{|resource_template| resource_template.partial_expand(actual_params)})
+    end
+    
+    # Return a new resource template with the path_template or uri_template expanded; expands also any child resource templates
+    # that don't require additional parameters.
+    def expand_links(actual_params)
+      ResourceTemplates.new(
+        select{|rt| (rt.positional_params(rt.parent) - rt.optional_params).empty?}.map {|rt|
+          {
+            "name"               => rt.name,
+            "rel"                => rt.rel,
+            "uri_template"       => rt.partial_expand_uri_template(rt.uri_template, actual_params),
+            "path_template"      => rt.partial_expand_uri_template(rt.path_template, actual_params),
+            "params"             => rt.params - actual_params.keys,
+            "optional_params"    => rt.optional_params - actual_params.keys,
+            "options"            => rt.options
+          }
+        })
     end
   end
 end

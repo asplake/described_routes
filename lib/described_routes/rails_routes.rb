@@ -2,6 +2,33 @@ require 'resource_template'
 
 module DescribedRoutes
   module RailsRoutes
+    # This is just glue really.  It captures some extra data in the top level ResourceTemplates container to help address a
+    # couple of issues:
+    # 1) Inconsistent id parameter naming - id become {foo}_id when foo becomes the parent of another type of resources
+    # 2) Rails doesn't pass in the route object (not even its name) when routing a request to a controller so we have
+    # to keep enough information here for us to be able to guess it. Controller and action will be enough 99% of the time.
+    class RailsResourceTemplates < ResourceTemplate::ResourceTemplates
+      # Maps [controller, action] to [resource_template, id_name]
+      attr_reader :routing
+      
+      def initialize(parsed)
+        super
+        
+        @routing = {}
+        save_routing(parsed)
+      end
+      
+      private
+      
+      def save_routing(parsed)
+        if parsed
+          parsed.each do |p|
+            @routing[[p["controller"], p["action"]]] = [all_by_name[p["name"]], p["id_name"]]
+            save_routing(p["resource_templates"])
+          end
+        end
+      end
+    end
     
     #
     # Hook to customise the "parsed" (Array/Hash) data.  For example, to remove certain sensitive routes:
@@ -11,12 +38,12 @@ module DescribedRoutes
     mattr_accessor :parsed_hook
     
     #
-    # Process Rails routes and return an array of ResourceTemplate objects
+    # Process Rails routes and return an array of ResourceTemplate objects.
     #
-    def self.get_resource_templates(base_url = nil)
+    def self.get_resource_templates(base_url=nil, routing=nil)
       parsed = get_parsed_rails_resources(base_url)
       parsed = parsed_hook.call(parsed) if parsed_hook
-      ResourceTemplate::ResourceTemplates.new(parsed)
+      RailsResourceTemplates.new(parsed)
     end
 
     #
@@ -34,13 +61,11 @@ module DescribedRoutes
 
         # prefix :id parameters consistently
         # TODO - probably a better way to do this, just need a pattern that matches :id and not :id[a-zA-Z0-9_]+
+        id_name = nil
         segs.gsub!(/:[a-zA-Z0-9_]+/) do |match|
           if match == ":id" && controller
-            if controller == "described_routes/rails"
-              ":route_name"
-            else
-              ":#{controller.singularize.sub(/.*\//, "")}_id"
-            end
+            id_name = (controller == "described_routes/rails") ? "route_name" : "#{controller.singularize.sub(/.*\//, "")}_id"
+            ':' + id_name
           else
             match
           end
@@ -81,12 +106,15 @@ module DescribedRoutes
           #   options           #=> ["GET"]
           #   name              #=> "edit_user"
           #   controller        #=> "rails"
+          #   id_name           #=> "user_id"
 
           # create a new route hash
           resource = {
             "path_template" => template,
             "options"       => options,
-            "controller"    => controller
+            "controller"    => controller,
+            "action"        => action,
+            "id_name"       => id_name
           }
           resource["params"] = params unless params.empty?
           resource["optional_params"] = optional_params unless optional_params.empty?

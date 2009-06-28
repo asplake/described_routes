@@ -1,3 +1,8 @@
+== 0.6.0 2009-06-28
+
+* Add automatic link header/element generation
+* LICENSE, README tweaks
+
 == 0.5.1 2009-05-22
 
 * Add ResourceTemplate::ResourceTemplate.find_by_rel

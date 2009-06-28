@@ -5,6 +5,7 @@ PostInstall.txt
 README.rdoc
 Rakefile
 lib/described_routes.rb
+lib/described_routes/helpers/described_routes_helper.rb
 lib/described_routes/rails_controller.rb
 lib/described_routes/rails_routes.rb
 lib/described_routes/rake_task_methods.rb
@@ -19,7 +20,10 @@ test/test_helper.rb
 test/test_resource_template.rb
 test_rails_app/Rakefile
 test_rails_app/app/controllers/application_controller.rb
+test_rails_app/app/controllers/users_controller.rb
+test_rails_app/app/controllers/welcome_controller.rb
 test_rails_app/app/helpers/application_helper.rb
+test_rails_app/app/views/layouts/default.html.erb
 test_rails_app/config/boot.rb
 test_rails_app/config/environment.rb
 test_rails_app/config/environments/development.rb
@@ -43,5 +47,6 @@ test_rails_app/test/fixtures/run_time/described_routes.text
 test_rails_app/test/fixtures/run_time/described_routes.xml
 test_rails_app/test/fixtures/run_time/described_routes.yaml
 test_rails_app/test/integration/described_routes_run_time_test.rb
+test_rails_app/test/integration/headers_test.rb
 test_rails_app/test/integration/rake_tasks_test.rb
 test_rails_app/test/test_helper.rb
