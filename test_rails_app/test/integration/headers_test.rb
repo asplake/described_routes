@@ -23,6 +23,15 @@ class DescribedRoutesRunTimeTest < ActionController::IntegrationTest
       headers["Link"])
   end
 
+  def test_new_user_headers
+    get "/users/new"
+    assert_equal(
+      '<http://www.example.com/users/new>; rel="self"; role="http://www.example.com/described_routes#new_user", ' +
+      '<http://www.example.com/described_routes/new_user>; rel="describedby"; meta="ResourceTemplate", ' +
+      '<http://www.example.com/users>; rel="up"; role="http://www.example.com/described_routes#users"',
+      headers["Link"])
+  end
+
   def test_user_headers
     get "/users/dojo"
     assert_equal(
@@ -34,4 +43,14 @@ class DescribedRoutesRunTimeTest < ActionController::IntegrationTest
       '<http://www.example.com/users/dojo/profile>; rel="http://www.example.com/described_routes/user#profile"; role="http://www.example.com/described_routes#user_profile"',
       headers["Link"])
   end
+
+  def test_edit_user_headers
+    get "/users/dojo/edit"
+    assert_equal(
+      '<http://www.example.com/users/dojo/edit>; rel="self"; role="http://www.example.com/described_routes#edit_user", ' +
+      '<http://www.example.com/described_routes/edit_user?user_id=dojo>; rel="describedby"; meta="ResourceTemplate", ' +
+      '<http://www.example.com/users/dojo>; rel="up"; role="http://www.example.com/described_routes#user"',
+      headers["Link"])
+  end
+
 end
