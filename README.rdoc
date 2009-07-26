@@ -2,9 +2,11 @@
 
 == DESCRIPTION
 
-Dynamic, framework-neutral metadata describing path/URI structures, with natural translations to/from JSON, YAML and XML.  Bonus features: easy Rails integration, link element / link header generation and a plain text report format!
-
-See roadmap for described_routes and path-to[http://github.com/asplake/path-to/tree] at http://positiveincline.com/?p=213.
+Features:
+* Dynamic, framework-neutral, client-friendly <code>ResourceTemplate</code> metadata describing the path/URI structures of your whole site or of specific resources
+* JSON, YAML and XML formats, also a bonus plain text report
+* A link header-based discovery protocol, enabling clients to find <code>ResourceTemplate</code> metadata from the resources of any enabled controller
+* Easy integration with Rails
 
 == SYNOPSIS:
 
@@ -71,19 +73,22 @@ There are two integration steps for run time support:
 You (or your client application) can now browse to any of the following top level addresses:
 
 * .../described_routes
+* .../described_routes.txt
 * .../described_routes.json
 * .../described_routes.xml
 * .../described_routes.yaml
-* .../described_routes.txt
 
 and for the named route "users" (say):
 
+* .../described_routes/users
+* .../described_routes/users.txt
 * .../described_routes/users.json
 * .../described_routes/users.xml
 * .../described_routes/users.yaml
-* .../described_routes/users.txt
 
-If the application has a route named "root", run-time-generated data will include uri_template attributes based on root_url in addition to the path_template attributes supported at build time.
+In the absence of content negotiation, requests to addresses without format extensions redirect to the respective .txt address.
+
+If the application has a route named "root", run-time-generated data will include full URIs in <code>uri_template</code> attributes based on <code>root_url</code> in addition to the <code>path_template</code> attributes supported at build time.
 
 Example:
 
@@ -168,14 +173,14 @@ JSON example (after pretty printing):
   
 === Link Generation
 
-Generate link headers (see the draft spec http://tools.ietf.org/id/draft-nottingham-http-link-header-05.txt) by including
+Generate link headers (see the draft spec http://tools.ietf.org/id/draft-nottingham-http-link-header-06.txt) by including
 
   include DescribedRoutes::DescribedRoutesHelper
   after_filter :set_link_header
 
 in your controllers.  You can do this once in ApplicationController to get this behaviour across all controllers, or in specific controllers (for example the one for the root resource).
 
-See DescribedRoutes::DescribedRoutesHelper#link_data for configuration options; note however that you will need to define a new filter method if you wish to override the defaults.
+See DescribedRoutes::DescribedRoutesHelper#link_data for configuration options; note however that you will need to define a new filter method if you wish to override the defaults. These are set to provide the minimum information necessary to support site discovery via resource-specific metadata links.
 
 == DATA STRUCTURES and FORMATS
 
