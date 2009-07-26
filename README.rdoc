@@ -70,10 +70,11 @@ There are two integration steps for run time support:
 
 You (or your client application) can now browse to any of the following top level addresses:
 
+* .../described_routes
 * .../described_routes.json
 * .../described_routes.xml
 * .../described_routes.yaml
-* .../described_routes.ytxt
+* .../described_routes.txt
 
 and for the named route "users" (say):
 
