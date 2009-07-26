@@ -6,6 +6,8 @@ module DescribedRoutes
   class RailsController < ActionController::Base
     include DescribedRoutes::DescribedRoutesHelper
     
+    after_filter :set_link_header
+    
     def index
       expanded_templates = resource_templates.partial_expand(request.query_parameters)
       
@@ -31,6 +33,11 @@ module DescribedRoutes
         format.yaml { render :text => resource_template.to_yaml }
         format.xml  { render :xml  => resource_template.to_xml(Builder::XmlMarkup.new(:indent => 2)).target! }
       end
+    end
+    
+    def set_link_header
+      rel = request.path == described_routes_path ? "self" : "index"
+      response.headers["Link"] = %Q(<#{described_routes_url}>; rel="#{rel}"; meta="ResourceTemplates")
     end
   end
 end

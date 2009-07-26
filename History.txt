@@ -1,3 +1,7 @@
+== 0.7.0 2009-07-26
+
+* Discovery protocol via link headers
+
 == 0.6.1 2009-06-28
 
 * Add all_preorder and all_postorder to ResourceTemplate and ResourceTemplates
