@@ -13,6 +13,7 @@ $hoe = Hoe.spec 'described_routes' do
   self.url = 'http://positiveincline.com/?p=213'
   self.extra_deps         = [
     ['addressable','>= 2.1.0'],
+    ['link_header','>= 0.0.5']
   ]
   self.extra_dev_deps = [
     ['newgem', ">= #{::Newgem::VERSION}"]

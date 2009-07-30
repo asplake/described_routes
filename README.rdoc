@@ -4,9 +4,9 @@
 
 Features:
 * Dynamic, framework-neutral, client-friendly <code>ResourceTemplate</code> metadata describing the path/URI structures of your whole site or of specific resources
-* JSON, YAML and XML formats, also a bonus plain text report
 * A link header-based discovery protocol, enabling clients to find <code>ResourceTemplate</code> metadata from the resources of any enabled controller
 * Easy integration with Rails
+* JSON, YAML and XML formats, also a bonus plain text report
 
 == SYNOPSIS:
 
@@ -62,7 +62,7 @@ include full URI templates.
 
 There are two integration steps for run time support:
 
-1) Include the controller, perhaps in an initializer:
+1) Somewhere in your application include the controller, perhaps in an initializer:
 
   require 'described_routes/rails_controller'
 

@@ -1,8 +1,11 @@
+require 'link_header'
+
 module DescribedRoutes
   module DescribedRoutesHelper
-    # Map rels to standard relation types, used by #link_data
+    # Map rels to standard relation types, used by #make_link_header
     REGISTERED_RELS = {
-      'edit' => 'edit'
+      'edit' => 'edit',
+      'up'   => 'up'
     }
     
     # The default options parameter to #link_elements; controls which links appear in html link elements 
@@ -41,49 +44,27 @@ module DescribedRoutes
       end
     end
   
-    # Render link_data as <link <url> rel=<rel> ... type=<type>> elements.  Add to the <head> part of your layout with:
+    # Render links as <link <url> rel=<rel> ... type=<type>> elements.  Add to the <head> part of your layout with:
     #   <%= link_elements %>
-    def link_elements(options=LINK_ELEMENT_OPTIONS)
-      link_data(options).map{|url, rels, attrs|
-        [
-          %Q(<link href="#{url}"),
-          rels.map{|r| %Q(rel="#{r}")},
-          attrs.map{|k, v| %Q(#{k}="#{v}")}
-         ].join(' ')
-      }.join("\n")
+    def link_elements(separator="\n", options=LINK_ELEMENT_OPTIONS)
+      make_link_header(options).to_html(separator)
     end
   
-    # Render link_data as a link header.  Usage:
-    #   response.headers["Link"] = link_header(options)
-    # or use #set_link_header
-    def link_header(options=LINK_HEADER_OPTIONS)
-      link_data(options).map{|url, rels, attrs|
-        [
-          "<#{url}>",
-          rels.map{|r| %Q(rel="#{r}")},
-          attrs.map{|k, v| %Q(#{k}="#{v}")}
-         ].join('; ')
-      }.join(', ')
-    end
-    
     # Sets a link header in the response
     #     after_filter :set_link_header 
     def set_link_header(options=LINK_HEADER_OPTIONS)
-      response.headers["Link"] = link_header(options)
+      response.headers["Link"] = make_link_header(options).to_s
     end
 
-    # Returns an array of link information, each element containing 
-    # 0) a URL
-    # 1) a list of link relation types (there can be more than one)
-    # 2) a hash of attributes, typically just one, either "role" (for regular resources) or "meta" (for metadata resources)
-    # The list of link relations types will contain a standard type ('self', 'up', 'describedby') &/or an extention type
+    # Returns a LinkHeader object that represents the required links.
+    #
+    # Link relation types ("rel" attributes) will contain a standard type ('self', 'up', 'describedby') &/or an extension type
     # in the form "described_route_url(name)#rel", using the name and rel of the resource template.
     #
     # The output is filtered by the options hash, with members :self, :describedby, :up, :related.
-    # Rel values will include a short value (e.g. 'edit') if the template's rel has a mapping in REGISTERED_RELS. 
     #
-    def link_data(options)
-      result = []
+    def make_link_header(options)
+      links = []
       rt = resource_template
       if rt
         type_prefix = described_routes_url + '#'
@@ -112,31 +93,39 @@ module DescribedRoutes
         end
         
         # data for rel="self"
-        result << [request.url, ['self'], {'role' => type_prefix + rt.name}] if options[:self]
+        links << LinkHeader::Link.new(request.url, [['rel', 'self'], ['role', type_prefix + rt.name]]) if options[:self]
 
         # data for rel="described_by"
-        result << [described_by_with_params, ['describedby'], {'meta' => meta}] if options[:describedby]
+        links << LinkHeader::Link.new(described_by_with_params, [['rel', 'describedby'], ['meta', meta]]) if options[:describedby]
 
         # data for rel="up"
+        # TODO move this to ResourceTemplate
         if options[:up]
           if rt.parent
-            result << [rt.parent.uri_for(resource_parameters), ['up'], {'role' => type_prefix + rt.parent.name}]
+            links << LinkHeader::Link.new(rt.parent.uri_for(resource_parameters), [['rel', 'up'], ['role', type_prefix + rt.parent.name]])
           elsif rt.name != 'root'
-            result << [root_url, ['up'], {'role' => type_prefix + 'root'}]
+            links << LinkHeader::Link.new(root_url, [['rel', 'up'], ['role', type_prefix + 'root']])
           end
         end
 
         # data for rel="related"
         if options[:related]
-          related.expand_links(resource_parameters).map do |l|
+          related.expand_links(resource_parameters).each do |l|
             if l.name != rt.name
               rel = l.rel || l.name
-              result << [l.uri, REGISTERED_RELS[rel].to_a + [described_by + '#' + rel], {'role' => type_prefix + l.name}]
+              rels = [['rel', described_by + '#' + rel]]
+              if l.rel
+                registered_rel = REGISTERED_RELS[rel]
+                if registered_rel
+                  rels.unshift(['rel', registered_rel])
+                end
+              end
+              links << LinkHeader::Link.new(l.uri, rels + [['role', type_prefix + l.name]])
             end
           end
         end
       end
-      result
+      LinkHeader.new(links)
     end
   end
 end
