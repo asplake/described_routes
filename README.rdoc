@@ -176,7 +176,7 @@ JSON example (after pretty printing):
 
 A discovery protocol based on link headers is added automatically by the middleware (controller changes are no longer required).  This protocol is understood by <code>path-to</code> (enabling client APIs to be bootstrapped easily) and the link headers can be regarded as adding useful type information to resources.
 
-Regular resources are given a link header that points to that resource's <code>ResourceTemplate</code> metadata.  That in turn is given a link header that points to the </code>ResourceTemplates</code> metadata for the entire application.  The root resource has a link header that points to the  </code>ResourceTemplates</code> metadata directly.
+Regular resources are given a link header that points to that resource's <code>ResourceTemplate</code> metadata.  That in turn is given a link header that points to the <code>ResourceTemplates</code> metadata for the entire application.  The root resource has a link header that points to the  <code>ResourceTemplates</code> metadata directly.
 
 For further information on link headers, see the draft spec http://tools.ietf.org/id/draft-nottingham-http-link-header-06.txt and the <code>link_header</code> gem.
 
