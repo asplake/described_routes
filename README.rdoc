@@ -8,7 +8,9 @@ Features:
 * Easy integration with Rails
 * JSON, YAML and XML formats, also a bonus plain text report
 
-== SYNOPSIS:
+ATTENTION: 0.8.0 adds Rails integration via Rack middleware; the Rails controller and helpers are hereby deprecated!
+
+== USAGE:
 
 === Build time
 
@@ -60,15 +62,14 @@ include full URI templates.
 
 === Run time
 
+In your config/environment.rb, add the DescribedRoutes::Middleware::Rails middleware in the <code>Rails::Initializer.run</code> block:
+
+  require 'described_routes/middleware/rails'
+  
+  Rails::Initializer.run do |config|
+    config.middleware.use DescribedRoutes::Middleware::Rails
+  end
 There are two integration steps for run time support:
-
-1) Somewhere in your application include the controller, perhaps in an initializer:
-
-  require 'described_routes/rails_controller'
-
-2) Add the following route in config/routes.rb:
-
-  map.resources :described_routes, :controller => "described_routes/rails"
 
 You (or your client application) can now browse to any of the following top level addresses:
 
@@ -88,7 +89,7 @@ and for the named route "users" (say):
 
 In the absence of content negotiation, requests to addresses without format extensions redirect to the respective .txt address.
 
-If the application has a route named "root", run-time-generated data will include full URIs in <code>uri_template</code> attributes based on <code>root_url</code> in addition to the <code>path_template</code> attributes supported at build time.
+Note that 
 
 Example:
 
@@ -171,16 +172,13 @@ JSON example (after pretty printing):
      ]
   }
   
-=== Link Generation
+=== Link Header Discovery Protocol
 
-Generate link headers (see the draft spec http://tools.ietf.org/id/draft-nottingham-http-link-header-06.txt) by including
+A discovery protocol based on link headers is added automatically by the middleware (controller changes are no longer required).  This protocol is understood by <code>path-to</code> (enabling client APIs to be bootstrapped easily) and the link headers can be regarded as adding useful type information to resources.
 
-  include DescribedRoutes::DescribedRoutesHelper
-  after_filter :set_link_header
+Regular resources are given a link header that points to that resource's <code>ResourceTemplate</code> metadata.  That in turn is given a link header that points to the </code>ResourceTemplates</code> metadata for the entire application.  The root resource has a link header that points to the  </code>ResourceTemplates</code> metadata directly.
 
-in your controllers.  You can do this once in ApplicationController to get this behaviour across all controllers, or in specific controllers (for example the one for the root resource).
-
-See DescribedRoutes::DescribedRoutesHelper#link_data for configuration options; note however that you will need to define a new filter method if you wish to override the defaults. These are set to provide the minimum information necessary to support site discovery via resource-specific metadata links.
+For further information on link headers, see the draft spec http://tools.ietf.org/id/draft-nottingham-http-link-header-06.txt and the <code>link_header</code> gem.
 
 == DATA STRUCTURES and FORMATS
 

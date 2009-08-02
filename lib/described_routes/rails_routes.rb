@@ -1,4 +1,5 @@
 require 'resource_template'
+require 'active_support'
 
 module DescribedRoutes
   module RailsRoutes

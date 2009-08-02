@@ -22,7 +22,8 @@ ActionController::Routing::Routes.draw do |map|
   map.root :controller => "welcome"
   
   #
-  # described_routes at runtime
+  # described_routes at runtime. DEPRECATED - use DescribedRoutes::Middleware::Rails instead - but retained here
+  # until the test fixtures have had the resulting routes removed
   #
   map.resources :described_routes, :controller => "described_routes/rails"
 end

@@ -30,7 +30,7 @@ class DescribedRoutesRunTimeTest < ActionController::IntegrationTest
   end
 
   def test_partial_expand
-    get "/described_routes/new_user_profile.text?user_id=dojo&format=json"
+    get "/described_routes/new_user_profile.text", "user_id" => "dojo", "format" => "json"
     assert_equal("new_user_profile new_user_profile GET http://www.example.com/users/dojo/profile/new.json", body.chomp)
   end
 end

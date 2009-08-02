@@ -7,7 +7,6 @@ class ApplicationController < ActionController::Base
   include DescribedRoutes::DescribedRoutesHelper
   helper DescribedRoutes::DescribedRoutesHelper
 
-  after_filter :set_link_headers
   
   layout "default"
   
@@ -15,10 +14,14 @@ class ApplicationController < ActionController::Base
 
   # Scrub sensitive parameters from your log
   # filter_parameter_logging :password
-  
-  protected
-  
-  def set_link_headers
-    set_link_header :self => true, :up => true, :describedby => true, :related => true
-  end
+ 
+# This is no longer required - DescribedRoutes::Middleware::Rails takes care of it all!
+# 
+#  after_filter :set_link_headers
+#
+#  protected
+#  
+#  def set_link_headers
+#    set_link_header :self => true, :up => true, :describedby => true, :related => true
+#  end
 end
