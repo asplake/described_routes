@@ -96,11 +96,12 @@ module DescribedRoutes
             return [404, {'Content-Type' => 'text/plain'}, ["No ResourceTemplate named #{route_name.inspect}"]]
           end
           target = resource_template
-        else            # /described_routes
+          rel = "index" # link header will point to the site ResourceTemplates description
+        else
+          rel = "self"  # this is the site ResourceTemplates description
           target = @resource_templates
         end        
         expanded = target.partial_expand(req.GET)
-
         Rack::RespondTo.env = req.env
         if format
           # Format extension overrides any accept header
@@ -116,7 +117,13 @@ module DescribedRoutes
           format.yaml {expanded.to_yaml}
           format.xml  {expanded.to_xml(Builder::XmlMarkup.new(:indent => 2)).target!}
         end
-        [200, {'Content-Type' => Rack::RespondTo.selected_media_type}, [body]]
+
+        headers = {
+          'Link' => %Q(<#{@described_routes_uri}>; rel="#{rel}"; meta="ResourceTemplates"),
+          'Content-Type' => Rack::RespondTo.selected_media_type
+        }
+        
+        [200, headers, [body]]
       end
       
       #

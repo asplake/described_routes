@@ -6,6 +6,8 @@ README.rdoc
 Rakefile
 lib/described_routes.rb
 lib/described_routes/helpers/described_routes_helper.rb
+lib/described_routes/middleware/base.rb
+lib/described_routes/middleware/rails.rb
 lib/described_routes/rails_controller.rb
 lib/described_routes/rails_routes.rb
 lib/described_routes/rake_task_methods.rb
@@ -33,10 +35,6 @@ test_rails_app/config/initializers/described_routes.rb
 test_rails_app/config/initializers/new_rails_defaults.rb
 test_rails_app/config/initializers/session_store.rb
 test_rails_app/config/routes.rb
-test_rails_app/log/development.log
-test_rails_app/log/production.log
-test_rails_app/log/server.log
-test_rails_app/log/test.log
 test_rails_app/script/server
 test_rails_app/test/fixtures/build_time/described_routes.json
 test_rails_app/test/fixtures/build_time/described_routes.text
