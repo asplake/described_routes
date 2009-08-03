@@ -1,3 +1,7 @@
+== 0.8.2 2009-08-03
+
+* Better content negotiation
+
 == 0.8.1 2009-08-03
 
 * Link headers on the described_routes ResourceTemplate(s) metadata served by the middleware

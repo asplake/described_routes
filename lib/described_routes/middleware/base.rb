@@ -100,15 +100,23 @@ module DescribedRoutes
         else
           rel = "self"  # this is the site ResourceTemplates description
           target = @resource_templates
-        end        
+        end
         expanded = target.partial_expand(req.GET)
+        
         Rack::RespondTo.env = req.env
         if format
           # Format extension overrides any accept header
           Rack::RespondTo.media_types = [Rack::Mime::MIME_TYPES[format]]
         else
           # Supported formats, .text preferred.  No html yet!
-          Rack::RespondTo.media_types = %w(.text .json .yaml .xml).map{|format| Rack::Mime::MIME_TYPES[format]}
+          supported_media_types = %w(.text .json .yaml .xml).map{|format| Rack::Mime::MIME_TYPES[format]}
+          # not sure why this is needed - thought Rack::RespondTo would choose for us
+          http_accept = req.env['HTTP_ACCEPT']
+          if supported_media_types.grep(http_accept).empty?
+            Rack::RespondTo.media_types = supported_media_types
+          else
+            Rack::RespondTo.media_types = [http_accept]
+          end
         end
 
         body = respond_to do |format|
