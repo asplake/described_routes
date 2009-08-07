@@ -10,6 +10,11 @@ Features:
 
 ATTENTION: 0.8.0 adds Rails integration via Rack middleware; the Rails controller and helpers are hereby deprecated!
 
+== INSTALL:
+
+  sudo gem install mynyml-rack-respond_to --source http://gems.github.com
+  sudo gem install described_routes
+
 == USAGE:
 
 === Build time
@@ -229,10 +234,6 @@ This hook operates on the raw "parsed" (Array/Hash) data before conversion to Re
 Rails, for the Rake tasks and Rails controller.  The ResourceTemplate class and its formats are however Rails-independent.
 
 The addressable[http://github.com/sporkmonger/addressable/tree] gem, 2.1.0 or above.  This is now available as a regular gem install from Rubyforge.
-
-== INSTALL:
-
-  sudo gem install described_routes
 
 == Author
 
